@@ -321,10 +321,15 @@ class RT_Client
   end
 
 ## MICK
-  def add_link(ticket_id, field_hash)
+  def add_link(field_hash)
+    if field_hash.has_key? :id
+      id = field_hash[:id]
+    else
+      raise "RT_Client.comment requires a Ticket number in the 'id' key."
+    end
     payload = compose(field_hash)
     pp payload
-    @site["ticket/#{ticket_id}/links"].post payload
+    @site["ticket/#{id}/links"].post payload
   end
 ## MICK
 
