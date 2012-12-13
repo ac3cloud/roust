@@ -319,7 +319,22 @@ class RT_Client
     payload = compose(field_hash)
     @site["ticket/#{id}/comment"].post payload
   end
-  
+
+## MICK
+  def add_link(field_hash)
+    if field_hash.has_key? :id
+      id = field_hash[:id]
+    else
+      raise "RT_Client.add_link requires a Ticket number in the 'id' key."
+    end
+    #FIXME: What goes here ?
+    #field_hash[:Action] = "comment"
+    payload = compose(field_hash)
+    pp payload
+    @site["ticket/#{id}/links"].post payload
+  end
+## MICK
+
   # Find RT user details from an email address
   #
   # rt.usersearch(:EmailAddress => 'some@email.com')
