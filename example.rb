@@ -9,6 +9,8 @@ ticket_id = '1318622'
 parent_id = '1258480'
 
 rt = RT_Client.new
-rt.add_link(:id => ticket_id, :MemberOf => parent_id)
-rt.links(:id => ticket_id)
+rt.add_link(ticket_id, :MemberOf => '1258480')
 
+links = rt.links(:id => ticket_id)
+
+pp links
