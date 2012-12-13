@@ -321,17 +321,10 @@ class RT_Client
   end
 
 ## MICK
-  def add_link(field_hash)
-    if field_hash.has_key? :id
-      id = field_hash[:id]
-    else
-      raise "RT_Client.add_link requires a Ticket number in the 'id' key."
-    end
-    #FIXME: What goes here ?
-    #field_hash[:Action] = "comment"
+  def add_link(ticket_id, field_hash)
     payload = compose(field_hash)
     pp payload
-    @site["ticket/#{id}/links"].post payload
+    @site["ticket/#{ticket_id}/links"].post payload
   end
 ## MICK
 
@@ -831,6 +824,7 @@ class RT_Client
     end
     field_array = fields.map { |k,v| "#{k}: #{v}" }
     content = field_array.join("\n") # our form
+    pp content
     # add the form to the end of any attachments
     body << "--#{@boundary}\r\n"
     body << "Content-Disposition: form-data; "
@@ -839,4 +833,4 @@ class RT_Client
     body << "--#{@boundary}--\r\n"
     body
   end
-end  
+end
