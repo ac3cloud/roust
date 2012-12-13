@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.6.2}
   s.summary = %q{Ruby object for RT access via REST}
 
+  s.files = Dir['README.md', 'rt-client.gemspec', '**/*.rb']
+
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
