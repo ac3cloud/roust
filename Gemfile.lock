@@ -1,0 +1,31 @@
+PATH
+  remote: .
+  specs:
+    rt-client (0.4.0)
+      archive-tar-minitar (>= 0.5)
+      hoe (>= 1.9.0)
+      mime-types (>= 1.16)
+      nokogiri (>= 1.2)
+      rcov (>= 0.8)
+      rest-client (>= 0.9)
+      tmail (>= 1.2.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    archive-tar-minitar (0.5.2)
+    hoe (3.3.1)
+      rake (>= 0.8, < 11.0)
+    mime-types (1.19)
+    nokogiri (1.5.5)
+    rake (10.0.3)
+    rcov (1.0.0)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    tmail (1.2.7.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rt-client!
