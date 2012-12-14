@@ -15,12 +15,12 @@ require 'pp'
 ##specify it/update it in lots of different scripts.
 ##
 ## Thanks to Brian McArdle for patch dealing with spaces in Custom Fields.
-## To reference custom fields in RT that have spaces with rt-client, use an 
+## To reference custom fields in RT that have spaces with rt-client, use an
 ## underscore in the rt-client code, e.g. "CF.{Has_Space}"
 ##
 ##TODO: Streaming, chunking attachments in compose method
 #
-# See each method for sample usage.  To use this, "gem install rt-client" and 
+# See each method for sample usage.  To use this, "gem install rt-client" and
 #
 #  require "rt/client"
 
@@ -28,9 +28,9 @@ class RT_Client
 
   UA = "Mozilla/5.0 ruby RT Client Interface 0.4.0"
   attr_reader :status, :site, :version, :cookies, :server, :user, :cookie
-  
+
   # Create a new RT_Client object. Load up our stored cookie and check it.
-  # Log into RT again if needed and store the new cookie.  You can specify 
+  # Log into RT again if needed and store the new cookie.  You can specify
   # login and cookie storage directories in 3 different ways:
   #  1. Explicity during object creation
   #  2. From a .rtclientrc file in the working directory of your ruby program
@@ -38,7 +38,7 @@ class RT_Client
   #
   # These are listed in order of priority; if you have explicit parameters,
   # they are always used, even if you have .rtclientrc files.  If there
-  # is both an .rtclientrc in your program's working directory and 
+  # is both an .rtclientrc in your program's working directory and
   # in the library directory, the one from your program's working directory
   # is used.  If no parameters are specified either explicity or by use
   # of a .rtclientrc, then the defaults of "rt_user", "rt_pass" are used
@@ -76,6 +76,7 @@ class RT_Client
     @server = $~[1] if config =~ /\s*server\s*=\s*(.*)$/i
     @user = $~[1] if config =~ /^\s*user\s*=\s*(.*)$/i
     @pass = $~[1] if config =~ /^\s*pass\s*=\s*(.*)$/i
+    @rtname = $~[1] if config =~ /^\s*rtname\s*=\s*(.*)$/i
     @cookies = $~[1] if config =~ /\s*cookies\s*=\s*(.*)$/i
     @resource = "#{@server}REST/1.0/"
     if params.class == Array && params[0].class == Hash
@@ -87,6 +88,7 @@ class RT_Client
         @server += "/" if @server !~ /\/$/
         @resource = "#{@server}REST/1.0/"
       end
+      @rtname = param[:rtname] if param.has_key? :rtname
       @cookies  = param[:cookies] if param.has_key? :cookies
     end
     @login = { :user => @user, :pass => @pass }
@@ -102,11 +104,12 @@ class RT_Client
                   'Content-Type' => "application/x-www-form-urlencoded" }
       @cookie = ""
     end
-    
+
+    @rtname ||= URI.parse(@server).host
 
     site = RestClient::Resource.new(@resource, :headers => headers, :timeout => 120)
     data = site.post "" # a null post just to check that we are logged in
-    
+
     if @cookie.length == 0 or data =~ /401/ # we're not logged in
       data = site.post @login, :headers => headers
 #      puts data
@@ -130,7 +133,7 @@ class RT_Client
   # history or attachments (to get those use the history method) .  If no
   # type is specified, ticket is assumed.  takes a single parameter
   # containing the ticket/user id, and returns a hash of RT Fields => values
-  # 
+  #
   #  hash = rt.show(822)
   #  hash = rt.show("822")
   #  hash = rt.show("ticket/822")
@@ -173,10 +176,10 @@ class RT_Client
     reply
   end
 
-  # gets a list of ticket links for a ticket. 
-  # takes a single parameter containing the ticket id, 
+  # gets a list of ticket links for a ticket.
+  # takes a single parameter containing the ticket id,
   # and returns a hash of RT Fields => values
-  # 
+  #
   #  hash = rt.links(822)
   #  hash = rt.links("822")
   #  hash = rt.links("ticket/822")
@@ -252,7 +255,7 @@ class RT_Client
     end
     new_user # return the new user id or the full REST response
   end
-  
+
   # edit or create a user.  If the user exists, edits the user as "edit" would.
   # If the user doesn't exist, creates it as "create_user" would.
   def edit_or_create_user(field_hash)
@@ -272,10 +275,10 @@ class RT_Client
     resp = "Edit: #{resp1}\nCreate:#{resp2}"
     resp
   end
-  
+
   # edit an existing ticket/user. Requires a hash containing RT
   # form fields as keys.  the key :id is required.
-  # returns the complete REST response, whatever it is.  If the 
+  # returns the complete REST response, whatever it is.  If the
   # id supplied contains "user/", it edits a user, otherwise
   # it edits a ticket.  For a full list of fields you can edit,
   # try "/opt/rt3/bin/rt edit ticket/1"
@@ -301,7 +304,7 @@ class RT_Client
     resp = @site["#{type}/#{sid}/edit"].post payload
     resp
   end
-  
+
   # Comment on a ticket.  Requires a hash, which must have an :id key
   # containing the ticket number.  Returns the REST response.  For a list of
   # fields you can use in a comment, try "/opt/rt3/bin/rt comment ticket/1"
@@ -327,8 +330,17 @@ class RT_Client
     else
       raise "RT_Client.comment requires a Ticket number in the 'id' key."
     end
+
+    field_hash = Hash[field_hash.map do |key, value|
+      if key == :id then
+        [ key, value ]
+      else
+        expanded_value = "fsck.com-rt://#{@rtname}/ticket/#{value}"
+        [ key, expanded_value ]
+      end
+    end]
+
     payload = compose(field_hash)
-    pp payload
     @site["ticket/#{id}/links"].post payload
   end
 ## MICK
@@ -353,7 +365,7 @@ class RT_Client
     end
     reply
   end
-  
+
   # correspond on a ticket.  Requires a hash, which must have an :id key
   # containing the ticket number.  Returns the REST response.  For a list of
   # fields you can use in correspondence, try "/opt/rt3/bin/rt correspond
@@ -376,7 +388,7 @@ class RT_Client
     payload = compose(field_hash)
     @site["ticket/#{id}/comment"].post payload
   end
-  
+
   # Get a list of tickets matching some criteria.
   # Takes a string Ticket-SQL query and an optional "order by" parameter.
   # The order by is an RT field, prefix it with + for ascending
@@ -417,7 +429,7 @@ class RT_Client
   # one ticket, indentical to what you get from the show method (which only
   # acts on one ticket).  Use with caution; this can take a long time to
   # execute.
-  # 
+  #
   #  array = rt.query("Queue='Sales'")
   #  array = rt.query(:query => "Queue='Sales'",:order => "+Id")
   #  array = rt.query("Queue='Sales'","+Id")
@@ -466,7 +478,7 @@ class RT_Client
     end
     replies
   end
-  
+
   # Get a list of history transactions for a ticket.  Takes a ticket ID and
   # an optional format parameter.  If the format is ommitted, the short
   # format is assumed.  If the short format is requested, it returns an
@@ -486,7 +498,7 @@ class RT_Client
   # Content::      (The content of this item)
   # Creator::      (the RT user that created this item)
   # Created::      (Date/time this item was created)
-  # Attachments::  (a hash describing attachments to this item)             
+  # Attachments::  (a hash describing attachments to this item)
   #
   #  history = rt.history(881)
   #  history = rt.history(881,"short")
@@ -523,7 +535,7 @@ class RT_Client
       while resp.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/) #replace CF spaces with underscores
         resp.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
       end
-      items = resp.split("\n--\n") 
+      items = resp.split("\n--\n")
       list = []
       items.each do |item|
         th = TMail::Mail.parse(item)
@@ -560,20 +572,20 @@ class RT_Client
           end
         end
         list.push reply
-      end        
+      end
     end
     list
   end
-  
-  # Get the detail for a single history item.  Needs a ticket ID and a 
+
+  # Get the detail for a single history item.  Needs a ticket ID and a
   # history item ID, returns a hash of RT Fields => values.  The hash
   # also contains a special key named "attachments", whose value is
   # an array of hashes, where each hash represents an attachment.  The hash
   # keys are :id, :name, and :size.
-  # 
+  #
   #  x = rt.history_item(21, 6692)
   #  x = rt.history_item(:id => 21, :history => 6692)
-  #  => x = {"ticket" => "21", "creator" => "somebody", "description" => 
+  #  => x = {"ticket" => "21", "creator" => "somebody", "description" =>
   #  =>      "something happened", "attachments" => [{:name=>"file.txt",
   #  =>      :id=>"3289", size=>"651b"}, {:name=>"another.doc"... }]}
   def history_item(*params)
@@ -626,11 +638,11 @@ class RT_Client
     end
     reply
   end
-  
+
   # Get a list of attachments related to a ticket.
   # Requires a ticket id, returns an array of hashes where each hash
   # represents one attachment.  Hash keys are :id, :name, :type, :size.
-  # You can optionally request that unnamed attachments be included, 
+  # You can optionally request that unnamed attachments be included,
   # the default is to not include them.
   def attachments(*params)
     id = params[0]
@@ -672,13 +684,13 @@ class RT_Client
     end
     attachments
   end
-  
+
   # Get attachment content for single attachment.  Requires a ticket ID
   # and an attachment ID, which must be related.  If a directory parameter
-  # is supplied, the attachment is written to that directory.  If not, 
-  # the attachment content is returned in the hash returned by the 
+  # is supplied, the attachment is written to that directory.  If not,
+  # the attachment content is returned in the hash returned by the
   # function as the key 'content', along with some other keys you always get:
-  # 
+  #
   # transaction:: the transaction id
   # creator::     the user id number who attached it
   # id::          the attachment id
@@ -686,7 +698,7 @@ class RT_Client
   # contenttype:: MIME content type of the attachment
   # created::     date of the attachment
   # parent::      an attachment id if this was an embedded MIME attachment
-  #  
+  #
   #  x = get_attachment(21,3879)
   #  x = get_attachment(:ticket => 21, :attachment => 3879)
   #  x = get_attachment(:ticket => 21, :attachment => 3879, :dir = "/some/dir")
@@ -714,8 +726,8 @@ class RT_Client
     end
     content = resp.match(/Content:\s+(.*)/m)[1]
     content.gsub!(/\n\s{9}/,"\n") # strip leading spaces on each line
-    content.chomp! 
-    content.chomp! 
+    content.chomp!
+    content.chomp!
     content.chomp! # 3 carriage returns at the end
     binary = Iconv.conv("ISO-8859-1","UTF-8",content) # convert encoding
     if dir
@@ -727,7 +739,7 @@ class RT_Client
     end
     reply
   end
-  
+
   # Add a watcher to a ticket, but only if not already a watcher.  Takes a
   # ticket ID, an email address (or array of email addresses), and an
   # optional watcher type.  If no watcher type is specified, its assumed to
@@ -777,16 +789,16 @@ class RT_Client
         edit(:id => tid, :Requestors => reqs.join(","))
     end
   end
-  
+
   # don't give up the password when the object is inspected
   def inspect # :nodoc:
     mystr = super()
     mystr.gsub!(/(.)pass=.*?([,\}])/,"\\1pass=<hidden>\\2")
     mystr
   end
-  
+
   private
-  
+
   # Private helper for composing RT's "forms".  Requires a hash where the
   # keys are field names for an RT form.  If there's a :Text key, the value
   # is modified to insert whitespace on continuation lines.  If there's an
@@ -798,7 +810,7 @@ class RT_Client
     if fields.class != Hash
       raise "RT_Client.compose requires parameters as a hash."
     end
-    
+
     # fixup Text field for RFC822 compliance
     if fields.has_key? :Text
       fields[:Text].gsub!(/\n/,"\n ") # insert a space on continuation lines.
@@ -825,7 +837,7 @@ class RT_Client
         body << File.read(v) # oh dear, lets hope you have lots of RAM
       end
       # strip paths from filenames
-      fields[:Attachment] = filenames.map {|f| File.basename(f)}.join(',') 
+      fields[:Attachment] = filenames.map {|f| File.basename(f)}.join(',')
     end
     field_array = fields.map { |k,v| "#{k}: #{v}" }
     content = field_array.join("\n") # our form
