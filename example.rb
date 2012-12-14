@@ -10,6 +10,6 @@ parent_id = '1258480'
 
 rt = RT_Client.new
 
-rt.add_link(:id => ticket_id, :MemberOf => "fsck.com-rt://bulletproof.net.au/ticket/#{parent_id}")
+rt.add_link(:id => ticket_id, :MemberOf => parent_id)
 links = rt.links(:id => ticket_id)
 pp links
