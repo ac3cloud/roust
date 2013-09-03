@@ -29,16 +29,12 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<mime-types>, [">= 1.16"])
       s.add_runtime_dependency(%q<archive-tar-minitar>, [">= 0.5"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 1.2"])
-      s.add_runtime_dependency(%q<hoe>, [">= 1.9.0"])
-      s.add_runtime_dependency(%q<rcov>, [">= 0.8"])
     else
       s.add_dependency(%q<rest-client>, [">= 0.9"])
       s.add_dependency(%q<tmail>, [">= 1.2.0"])
       s.add_dependency(%q<mime-types>, [">= 1.16"])
       s.add_dependency(%q<archive-tar-minitar>, [">= 0.5"])
       s.add_dependency(%q<nokogiri>, [">= 1.2"])
-      s.add_dependency(%q<hoe>, [">= 1.9.0"])
-      s.add_dependency(%q<rcov>, [">= 0.8"])
     end
   else
     s.add_dependency(%q<rest-client>, [">= 0.9"])
@@ -46,7 +42,5 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<mime-types>, [">= 1.16"])
     s.add_dependency(%q<archive-tar-minitar>, [">= 0.5"])
     s.add_dependency(%q<nokogiri>, [">= 1.2"])
-    s.add_dependency(%q<hoe>, [">= 1.9.0"])
-    s.add_dependency(%q<rcov>, [">= 0.8"])
   end
 end
