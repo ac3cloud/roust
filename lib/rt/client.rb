@@ -1,12 +1,10 @@
 #!/usr/bin/ruby
 
-require "rubygems"
-require "rest_client"
-require "tmail"
-require "iconv"
+require 'rest_client'
+require 'tmail'
+require 'iconv'
 require 'mime/types' # requires both nokogiri and rcov.  Yuck.
 require 'date'
-require 'pp'
 
 ##A ruby library API to Request Tracker's REST interface. Requires the
 ##rubygems rest-client, tmail and mime-types to be installed.  You can
@@ -24,7 +22,8 @@ require 'pp'
 #
 #  require "rt/client"
 
-class RT_Client
+module RT
+class Client
 
   UA = "Mozilla/5.0 ruby RT Client Interface 0.4.0"
   attr_reader :status, :site, :version, :cookies, :server, :user, :cookie
@@ -850,4 +849,5 @@ class RT_Client
     body << "--#{@boundary}--\r\n"
     body
   end
+end
 end
