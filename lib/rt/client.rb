@@ -5,6 +5,7 @@ require 'tmail'
 require 'iconv'
 require 'mime/types' # requires both nokogiri and rcov.  Yuck.
 require 'date'
+require 'tmpdir'
 
 ##A ruby library API to Request Tracker's REST interface. Requires the
 ##rubygems rest-client, tmail and mime-types to be installed.  You can
@@ -56,41 +57,46 @@ class Client
   #  user=<RT user>
   #  pass=<RT password>
   #  cookies=<directory>
-  def initialize(*params)
+  def initialize(opts={})
+    @options = opts
+
     @boundary = "----xYzZY#{rand(1000000).to_s}xYzZY"
     @version = "0.4.0"
     @status = "Not connected"
-    @server = "http://localhost/"
-    @user = "rt_user"
-    @pass = "rt_pass"
-    @cookies = Dir.pwd
-    config_file = Dir.pwd + "/.rtclientrc"
-    config = ""
-    if File.file?(config_file)
-      config = File.read(config_file)
-    else
-      config_file = File.dirname(__FILE__) + "/.rtclientrc"
-      config = File.read(config_file) if File.file?(config_file)
-    end
-    @server = $~[1] if config =~ /\s*server\s*=\s*(.*)$/i
-    @user = $~[1] if config =~ /^\s*user\s*=\s*(.*)$/i
-    @pass = $~[1] if config =~ /^\s*pass\s*=\s*(.*)$/i
-    @rtname = $~[1] if config =~ /^\s*rtname\s*=\s*(.*)$/i
-    @cookies = $~[1] if config =~ /\s*cookies\s*=\s*(.*)$/i
-    @resource = "#{@server}REST/1.0/"
-    if params.class == Array && params[0].class == Hash
-      param = params[0]
-      @user = param[:user] if param.has_key? :user
-      @pass = param[:pass] if param.has_key? :pass
-      if param.has_key? :server
-        @server = param[:server]
-        @server += "/" if @server !~ /\/$/
-        @resource = "#{@server}REST/1.0/"
-      end
-      @rtname = param[:rtname] if param.has_key? :rtname
-      @cookies  = param[:cookies] if param.has_key? :cookies
-    end
-    @login = { :user => @user, :pass => @pass }
+    @cookies = Dir.mktmpdir
+    @username = @options[:username]
+    @password = @options[:password]
+    @server = @options[:server]
+    @resource = "#{@server}/REST/1.0/"
+
+#    config_file = Dir.pwd + "/.rtclientrc"
+#    config = ""
+#    if File.file?(config_file)
+#      config = File.read(config_file)
+#    else
+#      config_file = File.dirname(__FILE__) + "/.rtclientrc"
+#      config = File.read(config_file) if File.file?(config_file)
+#    end
+#    @server = $~[1] if config =~ /\s*server\s*=\s*(.*)$/i
+#    @user = $~[1] if config =~ /^\s*user\s*=\s*(.*)$/i
+#    @pass = $~[1] if config =~ /^\s*pass\s*=\s*(.*)$/i
+#    @rtname = $~[1] if config =~ /^\s*rtname\s*=\s*(.*)$/i
+#    @cookies = $~[1] if config =~ /\s*cookies\s*=\s*(.*)$/i
+#    @resource = "#{@server}REST/1.0/"
+#    if params.class == Array && params[0].class == Hash
+#      param = params[0]
+#      @user = param[:user] if param.has_key? :user
+#      @pass = param[:pass] if param.has_key? :pass
+#      if param.has_key? :server
+#        @server = param[:server]
+#        @server += "/" if @server !~ /\/$/
+#        @resource = "#{@server}REST/1.0/"
+#      end
+#      @rtname  = param[:rtname] if param.has_key? :rtname
+#      @cookies = param[:cookies] || Tempfile.new
+#    end
+
+    @login = { :user => @username, :pass => @password }
     cookiejar = "#{@cookies}/RT_Client.#{@user}.cookie" # cookie location
     cookiejar.untaint
     if File.file? cookiejar
@@ -111,7 +117,6 @@ class Client
 
     if @cookie.length == 0 or data =~ /401/ # we're not logged in
       data = site.post @login, :headers => headers
-#      puts data
       @cookie = data.headers[:set_cookie].to_s.split('; ')[0]
       # write the new cookie
       if @cookie !~ /nil/
@@ -126,6 +131,10 @@ class Client
     @site = RestClient::Resource.new(@resource, :headers => headers)
     @status = data
     self.untaint
+  end
+
+  def authenticated?
+    !@status[/401 Credentials required/]
   end
 
   # gets the detail for a single ticket/user.  If its a ticket, its without
@@ -505,18 +514,17 @@ class Client
   #  history = rt.history(881,"long")
   #  history = rt.history(:id => 881, :format => "long")
   #  => [{"id" => "6171", "ticket" => "881" ....}, {"id" => "6180", ...} ]
-  def history(*params)
-    id = params[0]
-    format = "short"
-    format = params[1].downcase if params.size > 1
+  def history(id, opts={})
+    options = {
+      :format => "short"
+    }
+    options.merge!(opts)
+
+    format = options[:format]
+
     comments = false
-    comments = params[2] if params.size > 2
-    if params[0].class == Hash
-       params = params[0]
-       id = params[:id] if params.has_key? :id
-       format = params[:format].downcase if params.has_key? :format
-       comments = params[:comments] if params.has_key? :comments
-    end
+    #comments = params[2] if params.size > 2
+
     id = id.to_s
     id = $~[1] if id =~ /ticket\/(\d+)/
     resp = @site["ticket/#{id}/history?format=#{format[0,1]}"].get
