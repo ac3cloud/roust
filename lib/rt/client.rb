@@ -357,12 +357,7 @@ class Client
   #
   # rt.usersearch(:EmailAddress => 'some@email.com')
   # => {"name"=>"rtlogin", "realname"=>"John Smith", "address1"=>"123 Main", etc }
-  def usersearch(field_hash)
-    if field_hash.has_key? :EmailAddress
-      email = field_hash[:EmailAddress]
-    else
-      raise "RT_Client.usersearch requires a user email in the 'EmailAddress' key."
-    end
+  def user(email)
     resp = @site["user/#{email}"].get
     resp.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"") # toss the HTTP response
     reply = {}
