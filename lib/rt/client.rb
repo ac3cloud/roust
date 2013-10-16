@@ -1,8 +1,7 @@
 #!/usr/bin/ruby
 
 require 'rest_client'
-require 'tmail'
-require 'iconv'
+require 'mail'
 require 'mime/types' # requires both nokogiri and rcov.  Yuck.
 require 'date'
 require 'tmpdir'
@@ -68,73 +67,46 @@ class Client
     @password = @options[:password]
     @server = @options[:server]
     @resource = "#{@server}/REST/1.0/"
+    @rtname = URI.parse(@server).host
+    @headers = {}
+    @last_response = ""
 
-#    config_file = Dir.pwd + "/.rtclientrc"
-#    config = ""
-#    if File.file?(config_file)
-#      config = File.read(config_file)
-#    else
-#      config_file = File.dirname(__FILE__) + "/.rtclientrc"
-#      config = File.read(config_file) if File.file?(config_file)
-#    end
-#    @server = $~[1] if config =~ /\s*server\s*=\s*(.*)$/i
-#    @user = $~[1] if config =~ /^\s*user\s*=\s*(.*)$/i
-#    @pass = $~[1] if config =~ /^\s*pass\s*=\s*(.*)$/i
-#    @rtname = $~[1] if config =~ /^\s*rtname\s*=\s*(.*)$/i
-#    @cookies = $~[1] if config =~ /\s*cookies\s*=\s*(.*)$/i
-#    @resource = "#{@server}REST/1.0/"
-#    if params.class == Array && params[0].class == Hash
-#      param = params[0]
-#      @user = param[:user] if param.has_key? :user
-#      @pass = param[:pass] if param.has_key? :pass
-#      if param.has_key? :server
-#        @server = param[:server]
-#        @server += "/" if @server !~ /\/$/
-#        @resource = "#{@server}REST/1.0/"
-#      end
-#      @rtname  = param[:rtname] if param.has_key? :rtname
-#      @cookies = param[:cookies] || Tempfile.new
-#    end
+    authenticate!
+  end
 
-    @login = { :user => @username, :pass => @password }
-    cookiejar = "#{@cookies}/RT_Client.#{@user}.cookie" # cookie location
-    cookiejar.untaint
-    if File.file? cookiejar
-      @cookie = File.read(cookiejar).chomp
-      headers = { 'User-Agent'   => UA,
-                  'Content-Type' => "application/x-www-form-urlencoded",
-                  'Cookie'       => @cookie }
+  def callback
+    Proc.new do |response, request, result|
+      # p [ 'callback', response, request, result ]
+      @last_response = response
+    end
+  end
+
+  def authenticate!
+    @site = RestClient::Resource.new(@resource, &callback)
+    login = {
+      :user => @username,
+      :pass => @password
+    }
+
+    response = @site.post(login)
+    if response =~ /401 Credentials required/
+      raise "Unauthenticated"
     else
-      headers = { 'User-Agent'   => UA,
-                  'Content-Type' => "application/x-www-form-urlencoded" }
-      @cookie = ""
+
+      headers = {
+        :cookies => response.cookies
+      }
     end
 
-    @rtname ||= URI.parse(@server).host
+    @site = RestClient::Resource.new(@resource, headers, &callback)
 
-    site = RestClient::Resource.new(@resource, :headers => headers, :timeout => 120)
-    data = site.post "" # a null post just to check that we are logged in
-
-    if @cookie.length == 0 or data =~ /401/ # we're not logged in
-      data = site.post @login, :headers => headers
-      @cookie = data.headers[:set_cookie].to_s.split('; ')[0]
-      # write the new cookie
-      if @cookie !~ /nil/
-        f = File.new(cookiejar,"w")
-        f.puts @cookie
-        f.close
-      end
-    end
-    headers = { 'User-Agent'   => UA,
-                'Content-Type' => "multipart/form-data; boundary=#{@boundary}",
-                'Cookie'       => @cookie }
-    @site = RestClient::Resource.new(@resource, :headers => headers)
-    @status = data
-    self.untaint
+    response = @site['ticket/1/show'].get
+    authenticated?
   end
 
   def authenticated?
-    !@status[/401 Credentials required/]
+    return false if @last_response.empty?
+    !(@last_response =~ /401 Credentials required/)
   end
 
   # gets the detail for a single ticket/user.  If its a ticket, its without
@@ -415,7 +387,10 @@ class Client
       order = params[:order] if params.has_key? :order
     end
     reply = []
-    resp = @site["search/ticket/?query=#{URI.escape(query)}&orderby=#{order}&format=s"].get
+
+    url = "search/ticket/?query=#{URI.escape(query)}&orderby=#{order}&format=s"
+    resp = @site[url].get
+    raise "Unauthenticated" if resp =~ /401 Credentials required/
     raise "Invalid query (#{query})" if resp =~ /Invalid query/
     resp = resp.split("\n") # convert to array of lines
     resp.each do |line|
@@ -731,7 +706,8 @@ class Client
     content.chomp!
     content.chomp!
     content.chomp! # 3 carriage returns at the end
-    binary = Iconv.conv("ISO-8859-1","UTF-8",content) # convert encoding
+
+    binary = content.encode("UTF-8", :invalid => :replace, :undef => :replace, :replace => "?")
     if dir
       fh = File.new("#{dir}/#{headers['Filename'].to_s}","wb")
       fh.write binary
