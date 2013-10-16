@@ -117,43 +117,41 @@ class Client
   #  hash = rt.show(822)
   #  hash = rt.show("822")
   #  hash = rt.show("ticket/822")
-  #  hash = rt.show(:id => 822)
-  #  hash = rt.show(:id => "822")
-  #  hash = rt.show(:id => "ticket/822")
   #  hash = rt.show("user/#{login}")
   #  email = rt.show("user/somebody")["emailaddress"]
+  #
   def show(id)
-    id = id[:id] if id.class == Hash
-    id = id.to_s
     type = "ticket"
-    sid = id
     if id =~ /(\w+)\/(.+)/
-      type = $~[1]
-      sid = $~[2]
+      type = $~[1].downcase
+      id  = $~[2]
     end
-    reply = {}
-    if type.downcase == 'user'
-      resp = @site["#{type}/#{sid}"].get
-    else
-      resp = @site["#{type}/#{sid}/show"].get
+
+    url = "#{type}/#{id}"
+    url << '/show' unless type == 'user'
+
+    response = @site[url].get
+
+    # Toss the HTTP response. Removes a string like this from before the header:
+    #
+    #   RT/3.4.6 200 Ok
+    #
+    response.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"")
+
+    # Replace CF spaces with underscores
+    while response.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/)
+      response.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
     end
-    resp.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"") # toss the HTTP response
-    resp.gsub!(/\n\n/,"\n") # remove double spacing, TMail stops at a blank line
-    while resp.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/) #replace CF spaces with underscores
-      resp.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
-    end
-    return {:error => resp, }  if resp =~ /does not exist./
-    th = TMail::Mail.parse(resp)
-    resp += "\nrtclientend:" # to make the pattern match on the last key in the response
-    th.each_header do |k,v|
-      reply["#{k}"] = v.to_s
-      kk = k.gsub(/\{/,"\\\{")
-      kk.gsub!(/\}/,"\\\}")
-      pattern = "^" + kk + ": (.*?)^[\\w\\.\\{\\}]+:"
-      temp = resp.match(/#{pattern}/mi) # TMail strips line breaks
-      reply["#{k}"] = temp[1].rstrip if temp.class != NilClass
-    end
-    reply
+
+    return {:error => response, }  if response =~ /does not exist./
+
+    message = Mail.new(response)
+
+    Hash[message.header.fields.map {|header|
+      key   = header.name.to_s.downcase
+      value = header.value.to_s
+      [ key, value ]
+    }]
   end
 
   # gets a list of ticket links for a ticket.
@@ -479,26 +477,23 @@ class Client
   # Attachments::  (a hash describing attachments to this item)
   #
   #  history = rt.history(881)
-  #  history = rt.history(881,"short")
   #  => [["10501"," Ticket created by blah"],["10510"," Comments added by userX"]]
-  #  history = rt.history(881,"long")
   #  history = rt.history(:id => 881, :format => "long")
   #  => [{"id" => "6171", "ticket" => "881" ....}, {"id" => "6180", ...} ]
   def history(id, opts={})
     options = {
       :format => "short"
-    }
-    options.merge!(opts)
+    }.merge(opts)
 
     format = options[:format]
+    fmt    = format[0]
 
     comments = false
     #comments = params[2] if params.size > 2
 
-    id = id.to_s
-    id = $~[1] if id =~ /ticket\/(\d+)/
-    resp = @site["ticket/#{id}/history?format=#{format[0,1]}"].get
-    if format[0,1] == "s"
+    resp = @site["ticket/#{id}/history?format=#{fmt}"].get
+
+    if fmt == "s"
       if comments
         h = resp.split("\n").select{ |l| l =~ /^\d+:/ }
       else
@@ -513,42 +508,46 @@ class Client
         resp.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
       end
       items = resp.split("\n--\n")
+
       list = []
       items.each do |item|
-        th = TMail::Mail.parse(item)
+        th = Mail.new(item)
         next if not comments and th["type"].to_s =~ /Comment/ # skip comments
         reply = {}
-        th.each_header do |k,v|
+        th.header.fields.each do |header|
+          k = header.name.to_s.downcase
+          v = header.value.to_s
+
           attachments = []
           case k
-            when "attachments"
-              temp = item.match(/Attachments:\s*(.*)/m)
-              if temp.class != NilClass
-                atarr = temp[1].split("\n")
-                atarr.map { |a| a.gsub!(/^\s*/,"") }
-                atarr.each do |a|
-                  i = a.match(/(\d+):\s*(.*)/)
-                  s={}
-                  s[:id] = i[1].to_s
-                  s[:name] = i[2].to_s
-                  sz = i[2].match(/(.*?)\s*\((.*?)\)/)
-                  if sz.class == MatchData
-                    s[:name] = sz[1].to_s
-                    s[:size] = sz[2].to_s
-                  end
-                  attachments.push s
+          when "attachments"
+            temp = item.match(/Attachments:\s*(.*)/m)
+            if temp.class != NilClass
+              atarr = temp[1].split("\n")
+              atarr.map { |a| a.gsub!(/^\s*/,"") }
+              atarr.each do |a|
+                i = a.match(/(\d+):\s*(.*)/)
+                s={}
+                s[:id] = i[1].to_s
+                s[:name] = i[2].to_s
+                sz = i[2].match(/(.*?)\s*\((.*?)\)/)
+                if sz.class == MatchData
+                  s[:name] = sz[1].to_s
+                  s[:size] = sz[2].to_s
                 end
-                reply["attachments"] = attachments
+                attachments.push s
               end
-            when "content"
-              reply["content"] = v.to_s
-              temp = item.match(/^Content: (.*?)^\w+:/m) # TMail strips line breaks
-              reply["content"] = temp[1] if temp.class != NilClass
-            else
-              reply["#{k}"] = v.to_s
+              reply["attachments"] = attachments
+            end
+          when "content"
+            reply["content"] = v.to_s
+            #temp = item.match(/^Content: (.*?)^\w+:/m) # TMail strips line breaks
+            #reply["content"] = temp[1] if temp.class != NilClass
+          else
+            reply["#{k}"] = v.to_s
           end
         end
-        list.push reply
+        list.push(reply)
       end
     end
     list

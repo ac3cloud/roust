@@ -53,15 +53,18 @@ describe "RT::Client" do
       txn.size.should == 2
     end
 
-    attrs = %w(ticket data oldvalue creator timetaken) +
-            %w(id type field newvalue content description) +
-            %w(attachments created)
+    #attrs = %w(ticket data oldvalue creator timetaken) +
+    #        %w(id type field newvalue content description) +
+    #        %w(attachments created)
+    attrs = %w(ticket data oldvalue timetaken) +
+            %w(id type field newvalue content description)
 
     long = rt.history("1", :format => "long")
     long.size.should > 0
     long.each do |txn|
       attrs.each do |attr|
-        txn[attr].should_not be_nil
+        #p txn unless txn[attr]
+        txn[attr].should_not be_nil, "#{attr} key doesn't exist"
       end
     end
   end
