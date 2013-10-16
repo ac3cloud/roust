@@ -57,12 +57,24 @@ describe "RT::Client" do
             %w(id type field newvalue content description) +
             %w(attachments created)
 
-    short = rt.history("1", :format => "long")
-    short.size.should > 0
-    short.each do |txn|
+    long = rt.history("1", :format => "long")
+    long.size.should > 0
+    long.each do |txn|
       attrs.each do |attr|
         txn[attr].should_not be_nil
       end
+    end
+  end
+
+  it "can find user details" do
+    rt = RT::Client.new(@credentials)
+    rt.authenticated?.should be_true
+
+    attrs = %w(name realname gecos nickname emailaddress id lang password)
+
+    user = rt.user("lindsay@bulletproof.net")
+    attrs.each do |attr|
+      user[attr].should_not be_nil, "#{attr} key doesn't exist"
     end
   end
 end
