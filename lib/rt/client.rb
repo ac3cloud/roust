@@ -330,13 +330,17 @@ class Client
   def user(email)
     resp = @site["user/#{email}"].get
     resp.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"") # toss the HTTP response
-    reply = {}
-    return reply if resp =~ /No user named/
-    th = TMail::Mail.parse(resp)
-    th.each_header do |k,v|
-      reply["#{k}"] = v.to_s
+
+    if resp =~ /No user named/
+      return {}
+    else
+      message = Mail.new(resp)
+      Hash[message.header.fields.map {|header|
+        key   = header.name.to_s.downcase
+        value = header.value.to_s
+        [ key, value ]
+      }]
     end
-    reply
   end
 
   # correspond on a ticket.  Requires a hash, which must have an :id key
