@@ -143,7 +143,22 @@ class Client
       response.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
     end
 
-    return {:error => response, }  if response =~ /does not exist./
+    return {:error => response }  if response =~ /does not exist./
+
+    # Sometimes the API returns requestors formatted like this:
+    #
+    #   Requestors: foo@example.org,
+    #               bar@example.org, baz@example.org
+    #               qux@example.org, quux@example.org,
+    #               corge@example.org
+    #
+    # Turn it into this:
+    #
+    #   Requestors: foo@example.org, bar@example.org, baz@example.org, ...
+    #
+    response.gsub!(/\nRequestors:((.+\n)*)/) do |match|
+      match.strip.split(/,\s+/).join(',').strip
+    end
 
     message = Mail.new(response)
 
