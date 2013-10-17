@@ -486,24 +486,21 @@ class Client
   #  => [{"id" => "6171", "ticket" => "881" ....}, {"id" => "6180", ...} ]
   def history(id, opts={})
     options = {
-      :format => "short"
+      :format   => 'short',
+      :comments => false
     }.merge(opts)
 
     format = options[:format]
     fmt    = format[0]
 
-    comments = false
-    #comments = params[2] if params.size > 2
+    comments = options[:comments]
 
     resp = @site["ticket/#{id}/history?format=#{fmt}"].get
 
     if fmt == "s"
-      if comments
-        h = resp.split("\n").select{ |l| l =~ /^\d+:/ }
-      else
-        h = resp.split("\n").select{ |l| l =~ /^\d+: [^Comments]/ }
-      end
-      list = h.map { |l| l.split(":") }
+      regex = comments ? '^\d+:' : '^\d+: [^Comments]'
+      h = resp.split("\n").select{ |l| l =~ /#{regex}/ }
+      list = h.map { |l| l.split(":", 2) }
     else
       resp.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"") # toss the HTTP response
       resp.gsub!(/^#.*?\n\n/,"") # toss the 'total" line
