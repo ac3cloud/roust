@@ -22,6 +22,7 @@ GEM
     nokogiri (1.6.0)
       mini_portile (~> 0.5.0)
     polyglot (0.3.3)
+    rake (10.1.0)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec (2.9.0)
@@ -41,5 +42,6 @@ PLATFORMS
 
 DEPENDENCIES
   colorize
+  rake
   rspec
   rt-client!
