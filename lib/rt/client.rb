@@ -92,7 +92,6 @@ class Client
     if response =~ /401 Credentials required/
       raise "Unauthenticated"
     else
-
       headers = {
         :cookies => response.cookies
       }
@@ -156,17 +155,27 @@ class Client
     #
     #   Requestors: foo@example.org, bar@example.org, baz@example.org, ...
     #
-    response.gsub!(/\nRequestors:((.+\n)*)/) do |match|
-      match.strip.split(/,\s+/).join(',').strip
+    response.gsub!(/\n\n/, "\n")
+
+    %w(Requestors Cc AdminCc).each do |field|
+      response.gsub!(/^#{field}:(.+)^\n/m) do |match|
+        match.strip.split(/,\s+/).join(', ').strip
+      end
     end
 
     message = Mail.new(response)
 
-    Hash[message.header.fields.map {|header|
+    hash = Hash[message.header.fields.map {|header|
       key   = header.name.to_s.downcase
       value = header.value.to_s
       [ key, value ]
     }]
+
+    %w(requestors cc admincc).each do |field|
+      hash[field] = hash[field].split(', ') if hash[field]
+    end
+
+    hash
   end
 
   # gets a list of ticket links for a ticket.
