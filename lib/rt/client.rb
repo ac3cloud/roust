@@ -349,21 +349,24 @@ class Client
 
   # Find RT user details from an email address
   #
-  # rt.usersearch(:EmailAddress => 'some@email.com')
+  # rt.user(:EmailAddress => 'some@email.com')
   # => {"name"=>"rtlogin", "realname"=>"John Smith", "address1"=>"123 Main", etc }
   def user(email)
     resp = @site["user/#{email}"].get
     resp.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"") # toss the HTTP response
+    resp.gsub!(/\n\n/, "\n")
 
     if resp =~ /No user named/
       return {}
     else
       message = Mail.new(resp)
-      Hash[message.header.fields.map {|header|
+      hash = Hash[message.header.fields.map {|header|
         key   = header.name.to_s.downcase
         value = header.value.to_s
         [ key, value ]
       }]
+      # FIXME: correctly handle signatures
+      hash
     end
   end
 
@@ -524,7 +527,7 @@ class Client
     if fmt == "s"
       regex = comments ? '^\d+:' : '^\d+: [^Comments]'
       h = resp.split("\n").select{ |l| l =~ /#{regex}/ }
-      list = h.map { |l| l.split(":", 2) }
+      list = h.map { |l| l.split(": ", 2) }
     else
       resp.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"") # toss the HTTP response
       resp.gsub!(/^#.*?\n\n/,"") # toss the 'total" line

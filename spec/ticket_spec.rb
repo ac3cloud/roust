@@ -20,9 +20,29 @@ describe "RT::Client" do
 
 
     stub_request(:get, "http://rt.example.org/REST/1.0/ticket/1/show").
-      to_return(:status => 200,
-                :body   => mocks_path.join('ticket-1-show.txt').read,
+      to_return(:status  => 200,
+                :body    => mocks_path.join('ticket-1-show.txt').read,
                 :headers => {})
+
+    stub_request(:get, "http://rt.example.org/REST/1.0/search/ticket/?format=s&orderby=&query=id%20=%201%20or%20id%20=%202").
+       to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-search-1-or-2.txt').read,
+                 :headers => {})
+
+    stub_request(:get, "http://rt.example.org/REST/1.0/ticket/1/history?format=s").
+       to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-1-history-short.txt').read,
+                 :headers => {})
+
+    stub_request(:get, "http://rt.example.org/REST/1.0/ticket/1/history?format=l").
+       to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-1-history-long.txt').read,
+                 :headers => {})
+
+    stub_request(:get, "http://rt.example.org/REST/1.0/user/dan@us.example").
+       to_return(:status  => 200,
+                 :body    => mocks_path.join('user-dan@us.example.txt').read,
+                 :headers => {})
   end
 
   it "authenticates on instantiation" do
@@ -68,11 +88,13 @@ describe "RT::Client" do
     rt = RT::Client.new(@credentials)
     rt.authenticated?.should be_true
 
-    #short = rt.history("1785760", :format => "short")
     short = rt.history("1", :format => "short")
-    short.size.should > 0
+
+    short.size.should > 1
     short.each do |txn|
       txn.size.should == 2
+      txn.first.should match(/^\d+$/)
+      txn.last.should  match(/^\w.*\w$/)
     end
 
     #attrs = %w(ticket data oldvalue creator timetaken) +
@@ -85,7 +107,6 @@ describe "RT::Client" do
     long.size.should > 0
     long.each do |txn|
       attrs.each do |attr|
-        #p txn unless txn[attr]
         txn[attr].should_not be_nil, "#{attr} key doesn't exist"
       end
     end
@@ -97,7 +118,7 @@ describe "RT::Client" do
 
     attrs = %w(name realname gecos nickname emailaddress id lang password)
 
-    user = rt.user("lindsay@bulletproof.net")
+    user = rt.user("dan@us.example")
     attrs.each do |attr|
       user[attr].should_not be_nil, "#{attr} key doesn't exist"
     end
