@@ -4,8 +4,25 @@ require 'yaml'
 
 describe "RT::Client" do
   before do
-    filename     = Pathname.new(__FILE__).parent.parent.join('credentials.yaml')
-    @credentials = YAML.load(File.read(filename))
+    @credentials = {
+      :server   => 'http://rt.example.org',
+      :username => 'admin',
+      :password => 'password'
+    }
+    mocks_path = Pathname.new(__FILE__).parent.join('mocks')
+
+    stub_request(:post, "http://rt.example.org/REST/1.0/").
+      with(:body => {
+            "user"=>"admin",
+            "pass"=>"password",
+           }).
+      to_return(:status => 200, :body => "", :headers => {})
+
+
+    stub_request(:get, "http://rt.example.org/REST/1.0/ticket/1/show").
+      to_return(:status => 200,
+                :body   => mocks_path.join('ticket-1-show.txt').read,
+                :headers => {})
   end
 
   it "authenticates on instantiation" do
@@ -41,12 +58,17 @@ describe "RT::Client" do
     attrs.each do |attr|
       ticket[attr].should_not be_nil, "#{attr} key doesn't exist"
     end
+
+    %w(requestors cc admincc).each do |field|
+      ticket[field].size.should > 1
+    end
   end
 
   it "can fetch transactions on individual tickets" do
     rt = RT::Client.new(@credentials)
     rt.authenticated?.should be_true
 
+    #short = rt.history("1785760", :format => "short")
     short = rt.history("1", :format => "short")
     short.size.should > 0
     short.each do |txn|

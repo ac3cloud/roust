@@ -8,4 +8,5 @@ group :development do
   gem 'rspec'
   gem 'colorize'
   gem 'rake'
+  gem 'webmock'
 end

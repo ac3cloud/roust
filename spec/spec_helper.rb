@@ -8,6 +8,7 @@
 require 'pathname'
 lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
 $: << lib
+require 'webmock/rspec'
 
 RSpec.configure do |config|
   # Use color in STDOUT
