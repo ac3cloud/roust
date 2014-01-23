@@ -2,22 +2,16 @@
 
 Gem::Specification.new do |s|
   s.name    = "rt-client"
-  s.version = "0.5.0"
+  s.version = "1.0.0"
 
-  s.authors = ["Tom Lahti"]
-  s.date = %q{2013-09-05}
-  s.email = %q{toml@bitstatement.net}
+  s.authors = ["Lindsay Holmwood"]
+  s.date = %q{2014-01-23}
+  s.email = %q{lindsay@holmwood.id.au}
 
-  s.requirements = ["A working installation of RT with the REST 1.0 interface"]
-  s.summary = %q{Ruby client for RT's REST API}
-  s.description = <<-DOC
-    RT_Client is a ruby object that accesses the REST interface version 1.0
-    of a Request Tracker instance.  See http://www.bestpractical.com/ for
-    Request Tracker.
-  DOC
+  s.summary      = %q{Ruby client for RT's REST API}
+  s.description  = %q{RT::Client is a ruby object that accesses the REST interface version 1.0 of a Request Tracker instance.  See http://www.bestpractical.com/ for Request Tracker.}
 
-  s.required_ruby_version     = ">= 1.8.7"
-  s.required_rubygems_version = ">= 1.3.6"
+  s.required_ruby_version     = ">= 1.9.2"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
