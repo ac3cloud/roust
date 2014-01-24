@@ -8,7 +8,7 @@ RSpec::Core::RakeTask.new('spec')
 
 desc "build gem"
 task :build do
-  build_output = `gem build rt-client.gemspec`
+  build_output = `gem build roust.gemspec`
   puts build_output
 
   gem_filename = build_output[/File: (.*)/,1]

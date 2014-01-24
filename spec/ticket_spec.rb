@@ -1,8 +1,7 @@
 require 'spec_helper'
-require 'rt/client'
-require 'yaml'
+require 'roust'
 
-describe "RT::Client" do
+describe "Roust" do
   before do
     @credentials = {
       :server   => 'http://rt.example.org',
@@ -46,12 +45,12 @@ describe "RT::Client" do
   end
 
   it "authenticates on instantiation" do
-    rt = RT::Client.new(@credentials)
+    rt = Roust.new(@credentials)
     rt.authenticated?.should be_true
   end
 
   it "can list tickets matching a query" do
-    rt = RT::Client.new(@credentials)
+    rt = Roust.new(@credentials)
     rt.authenticated?.should be_true
 
     results = rt.list(:query => "id = 1 or id = 2")
@@ -62,7 +61,7 @@ describe "RT::Client" do
   end
 
   it "can fetch metadata on individual tickets" do
-    rt = RT::Client.new(@credentials)
+    rt = Roust.new(@credentials)
     rt.authenticated?.should be_true
 
     ticket = rt.show("1")
@@ -85,7 +84,7 @@ describe "RT::Client" do
   end
 
   it "can fetch transactions on individual tickets" do
-    rt = RT::Client.new(@credentials)
+    rt = Roust.new(@credentials)
     rt.authenticated?.should be_true
 
     short = rt.history("1", :format => "short")
@@ -113,7 +112,7 @@ describe "RT::Client" do
   end
 
   it "can find user details" do
-    rt = RT::Client.new(@credentials)
+    rt = Roust.new(@credentials)
     rt.authenticated?.should be_true
 
     attrs = %w(name realname gecos nickname emailaddress id lang password)

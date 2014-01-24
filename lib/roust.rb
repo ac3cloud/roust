@@ -16,14 +16,12 @@ require 'tmpdir'
 ## To reference custom fields in RT that have spaces with rt-client, use an
 ## underscore in the rt-client code, e.g. "CF.{Has_Space}"
 ##
-##TODO: Streaming, chunking attachments in compose method
 #
-# See each method for sample usage.  To use this, "gem install rt-client" and
+# See each method for sample usage.  To use this, "gem install roust" and
 #
-#  require "rt/client"
+#  require "roust"
 
-module RT
-class Client
+class Roust
 
   UA = "Mozilla/5.0 ruby RT Client Interface 0.4.0"
   attr_reader :status, :site, :version, :cookies, :server, :user, :cookie
@@ -855,5 +853,4 @@ class Client
     body << "--#{@boundary}--\r\n"
     body
   end
-end
 end

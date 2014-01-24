@@ -1,15 +1,18 @@
 # -*- encoding: utf-8 -*-
+$:.push File.expand_path("../lib", __FILE__)
+require "roust/version"
 
 Gem::Specification.new do |s|
-  s.name    = "rt-client"
-  s.version = "1.0.0"
+  s.name    = "roust"
+  s.version = Roust::VERSION
+  s.date    = %q{2014-01-23}
 
-  s.authors = ["Lindsay Holmwood"]
-  s.date = %q{2014-01-23}
-  s.email = %q{lindsay@holmwood.id.au}
-
+  s.authors = [ "Lindsay Holmwood" ]
+  s.email   = [ "lindsay@bulletproof.net" ]
   s.summary      = %q{Ruby client for RT's REST API}
-  s.description  = %q{RT::Client is a ruby object that accesses the REST interface version 1.0 of a Request Tracker instance.  See http://www.bestpractical.com/ for Request Tracker.}
+  s.description  = %q{Roust is a Ruby API client that accesses the REST interface version 1.0 of a Request Tracker instance. See http://www.bestpractical.com/ for Request Tracker.}
+  s.homepage     = "http://github.com/bulletproofnetworks/roust"
+  s.license      = "Apache 2.0"
 
   s.required_ruby_version     = ">= 1.9.2"
 
