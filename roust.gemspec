@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.date    = %q{2014-01-23}
 
   s.authors = [ "Lindsay Holmwood" ]
-  s.email   = [ "lindsay@bulletproof.net" ]
+  s.email   = [ "lindsay@holmwood.id.au" ]
   s.summary      = %q{Ruby client for RT's REST API}
   s.description  = %q{Roust is a Ruby API client that accesses the REST interface version 1.0 of a Request Tracker instance. See http://www.bestpractical.com/ for Request Tracker.}
   s.homepage     = "http://github.com/bulletproofnetworks/roust"
