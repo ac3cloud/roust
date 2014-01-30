@@ -1,0 +1,21 @@
+RT/3.4.6 200 Ok
+
+id: user/160000
+Name: dan
+Password: ********
+EmailAddress: dan@us.example
+RealName: Dan Smith
+NickName: dan
+Gecos: dan
+Zip: quote
+MobilePhone: 0400123456
+PagerPhone: DESC
+
+Signature: Dan Smith
+           Engineer
+           Example Org
+           tel: 1300 000 123
+           mob: 0400 123 456
+           fax: 02 9000 1234
+
+Lang: en

@@ -1,0 +1,1451 @@
+RT/3.4.6 200 Ok
+
+# 67/67 (id/1/total)
+
+id: 1
+Ticket: 1
+TimeTaken: 0
+Type: Create
+Field: 
+OldValue: 
+NewValue: 
+Data: 
+Description: Ticket created by eve
+
+Content: 
+         The specified template is missing or inaccessable.
+          (/home/rt/etc/templates/queues/bptest/web_create)
+          However, the custom content which was supposed to fill the template was:
+          
+         
+         b;ah
+         
+
+
+Creator: eve
+Created: 2001-05-29 06:15:13
+
+Attachments: 
+             102274: untitled (2k)
+
+
+--
+
+# 67/67 (id/2/total)
+
+id: 2
+Ticket: 1
+TimeTaken: 0
+Type: Status
+Field: Status
+OldValue: open
+NewValue: resolved
+Data: 
+Description: Status changed from 'open' to 'resolved' by eve
+Content: This transaction appears to have no content
+Creator: eve
+Created: 2001-05-29 06:15:30
+Attachments: 
+
+--
+
+# 67/67 (id/3/total)
+
+id: 3
+Ticket: 1
+TimeTaken: 0
+Type: Comment
+Field: 
+OldValue: 
+NewValue: 
+Data: 
+Description: Comments added by eve
+
+Content: 
+         Cc: bp@us.example
+         
+         
+         I got the mobile of Nestor from Nigel at ROAR and rang Nestor, told him the 
+         password and resent my email.
+         
+         EV
+
+Creator: eve
+Created: 2001-05-29 06:16:21
+Attachments: 
+
+--
+
+# 67/67 (id/8342/total)
+
+id: 8342
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for test2 started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: test2
+         HW Addr: 00:a0:c9:76:be:a4
+         EYO Invoice: 1
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-01-31 02:32:38
+Attachments: 
+
+--
+
+# 67/67 (id/8343/total)
+
+id: 8343
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: resolved
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'resolved' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-01-31 02:32:39
+Attachments: 
+
+--
+
+# 67/67 (id/8344/total)
+
+id: 8344
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for test4 started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: test4
+         HW Addr: 00:a0:c9:76:be:a4
+         EYO Invoice: 1
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-01-31 02:32:41
+Attachments: 
+
+--
+
+# 67/67 (id/8345/total)
+
+id: 8345
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: open
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'open' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-01-31 02:32:41
+Attachments: 
+
+--
+
+# 67/67 (id/8489/total)
+
+id: 8489
+Ticket: 1
+TimeTaken: 0
+Type: Comment
+Field: 
+OldValue: 
+NewValue: 
+
+Data: Re: tell Nestor password for Ursa website
+
+
+Description: Comments added by eve
+
+Content: -- 
+         Cheers,
+           eve Lee
+           Senior Engineer
+           us.exampleworks
+           ph:  +61 (0) 2 9663 9000
+           fax: +61 (0) 2 9328 4115
+           mob: +61 (0) 416 212 025
+           http://www.us.example/
+         
+         This e-mail and any attachments are confidential and may be legally
+         privileged. Only the intended recipient may access or use it and no
+         confidentiality or privilege is waived or lost by mistaken 
+         transmission. If you are not the intended recipient you must not copy
+         or disclose this email's contents to any person and you must delete
+         it and notify  us immediately. us.exampleworks uses virus scanning 
+         software but excludes all liability for viruses or similar in any 
+         attachment as well as for any error or incompleteness in the contents 
+         of this e-mail.
+
+Creator: eve
+Created: 2002-02-04 09:26:46
+
+Attachments: 
+             7266: untitled (738b)
+             7267: untitled (0b)
+
+
+--
+
+# 67/67 (id/8490/total)
+
+id: 8490
+Ticket: 1
+TimeTaken: 0
+Type: Status
+Field: Status
+OldValue: open
+NewValue: resolved
+Data: 
+Description: Status changed from 'open' to 'resolved' by eve
+Content: This transaction appears to have no content
+Creator: eve
+Created: 2002-02-04 09:26:47
+Attachments: 
+
+--
+
+# 67/67 (id/9044/total)
+
+id: 9044
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for tony started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: tony
+         HW Addr: 00:02:b3:65:84:98
+         EYO Invoice: EYO12-1
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-02-24 23:12:09
+Attachments: 
+
+--
+
+# 67/67 (id/9045/total)
+
+id: 9045
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: resolved
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'resolved' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-02-24 23:12:10
+Attachments: 
+
+--
+
+# 67/67 (id/9046/total)
+
+id: 9046
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for tony started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: tony
+         HW Addr: 00:02:b3:65:84:98
+         EYO Invoice: EYO12
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-02-24 23:12:18
+Attachments: 
+
+--
+
+# 67/67 (id/9047/total)
+
+id: 9047
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: open
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'open' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-02-24 23:12:19
+Attachments: 
+
+--
+
+# 67/67 (id/9048/total)
+
+id: 9048
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for tony started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: tony
+         HW Addr: 00:02:b3:65:84:98
+         EYO Invoice: 12
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-02-24 23:12:24
+Attachments: 
+
+--
+
+# 67/67 (id/9049/total)
+
+id: 9049
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: open
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'open' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-02-24 23:12:24
+Attachments: 
+
+--
+
+# 67/67 (id/9050/total)
+
+id: 9050
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for tony started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: tony
+         HW Addr: 00:02:b3:65:84:98
+         EYO Invoice: EYO12345
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-02-24 23:12:30
+Attachments: 
+
+--
+
+# 67/67 (id/9051/total)
+
+id: 9051
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: open
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'open' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-02-24 23:12:31
+Attachments: 
+
+--
+
+# 67/67 (id/9052/total)
+
+id: 9052
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for tony started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: tony
+         HW Addr: 00:02:b3:65:84:98
+         EYO Invoice: E12345
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-02-24 23:12:34
+Attachments: 
+
+--
+
+# 67/67 (id/9053/total)
+
+id: 9053
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: open
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'open' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-02-24 23:12:34
+Attachments: 
+
+--
+
+# 67/67 (id/9054/total)
+
+id: 9054
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for tony started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: tony
+         HW Addr: 00:02:b3:65:84:98
+         EYO Invoice: EYO12345-A
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-02-24 23:13:31
+Attachments: 
+
+--
+
+# 67/67 (id/9055/total)
+
+id: 9055
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: open
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'open' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-02-24 23:13:32
+Attachments: 
+
+--
+
+# 67/67 (id/9196/total)
+
+id: 9196
+Ticket: 1
+TimeTaken: 0
+Type: Comment
+Field: 
+OldValue: 
+NewValue: 
+
+Data: Re: tell Nestor password for Ursa website
+
+
+Description: Comments added by eve
+
+Content: -- 
+         Cheers,
+           eve Lee
+           Senior Engineer
+           us.exampleworks
+           ph:  +61 (0) 2 9663 9000
+           fax: +61 (0) 2 9328 4115
+           mob: +61 (0) 416 212 025
+           http://www.us.example/
+         
+         This e-mail and any attachments are confidential and may be legally
+         privileged. Only the intended recipient may access or use it and no
+         confidentiality or privilege is waived or lost by mistaken 
+         transmission. If you are not the intended recipient you must not copy
+         or disclose this email's contents to any person and you must delete
+         it and notify  us immediately. us.exampleworks uses virus 
+         scanning 
+         software but excludes all liability for viruses or similar in any 
+         attachment as well as for any error or incompleteness in the contents 
+         of this e-mail.
+
+Creator: eve
+Created: 2002-03-01 02:33:22
+
+Attachments: 
+             8148: untitled (739b)
+             8149: untitled (0b)
+
+
+--
+
+# 67/67 (id/9197/total)
+
+id: 9197
+Ticket: 1
+TimeTaken: 0
+Type: Give
+Field: Owner
+OldValue: 6352
+NewValue: 5964
+Data: 
+Description: Given to john by eve
+Content: This transaction appears to have no content
+Creator: eve
+Created: 2002-03-01 02:33:23
+Attachments: 
+
+--
+
+# 67/67 (id/9205/total)
+
+id: 9205
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Queue
+OldValue: 7
+NewValue: 35
+Data: 
+Description: Queue changed from dev-request to zz-spare9 by eve
+Content: This transaction appears to have no content
+Creator: eve
+Created: 2002-03-01 03:17:01
+Attachments: 
+
+--
+
+# 67/67 (id/9384/total)
+
+id: 9384
+Ticket: 1
+TimeTaken: 0
+Type: Status
+Field: Status
+OldValue: open
+NewValue: deleted
+Data: 
+Description: Ticket deleted by john
+Content: This transaction appears to have no content
+Creator: john
+Created: 2002-03-07 01:33:03
+Attachments: 
+
+--
+
+# 67/67 (id/11905/total)
+
+id: 11905
+Ticket: 1
+TimeTaken: 0
+Type: Correspond
+Field: 
+OldValue: 
+NewValue: 
+
+Data: [us.example #1] Box build for sasc-fw-syd started
+
+
+Description: Correspondence added by build@us.example
+
+Content: Client: sasc-fw-syd
+         HW Addr: 00:02:b3:98:e8:3f
+         EYO Invoice: EYO00000-Z
+         RT Tracking Number: 1
+         
+         
+         -- 
+         EYO Box Builder
+
+
+Creator: build@us.example
+Created: 2002-04-12 07:26:26
+Attachments: 
+
+--
+
+# 67/67 (id/11906/total)
+
+id: 11906
+Ticket: 1
+TimeTaken: 0
+Type: Set
+Field: Status
+OldValue: dead
+NewValue: open
+Data: Ticket auto-opened on incoming correspondence
+Description: Status changed from 'dead' to 'open' by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2002-04-12 07:26:27
+Attachments: 
+
+--
+
+# 67/67 (id/12424/total)
+
+id: 12424
+Ticket: 1
+TimeTaken: 0
+Type: Status
+Field: Status
+OldValue: open
+NewValue: deleted
+Data: 
+Description: Ticket deleted by john
+Content: This transaction appears to have no content
+Creator: john
+Created: 2002-04-19 00:53:43
+Attachments: 
+
+--
+
+# 67/67 (id/831334/total)
+
+id: 831334
+Ticket: 1
+TimeTaken: 0
+Type: Status
+Field: Status
+OldValue: deleted
+NewValue: resolved
+Data: 
+Description: Status changed from 'deleted' to 'resolved' by ed
+Content: This transaction appears to have no content
+Creator: ed
+Created: 2006-05-16 02:18:39
+Attachments: 
+
+--
+
+# 67/67 (id/831335/total)
+
+id: 831335
+Ticket: 1
+TimeTaken: 0
+Type: EmailRecord
+Field: 
+OldValue: 
+NewValue: 
+Data: <rt-3.4.5-20576-1147745919-1352.1-68-0@us.example>
+Description: Outgoing email recorded by RT_System
+
+Content: Someone did something to your ticket
+         
+         Tue May 16 12:18:39 2006: Request 1 was acted upon.
+         Transaction: Status changed from 'deleted' to 'resolved' by ed
+                Queue: zz-spare9
+              Subject: tell Nestor password for Ursa website
+                Owner: john
+           Requestors: eve@us.example
+               Status: resolved
+         Who did this: ed
+          Ticket <URL: https://rt.us.example/Ticket/Display.html?id=1 >
+         
+         
+         
+
+
+Creator: RT_System
+Created: 2006-05-16 02:18:39
+Attachments: 
+
+--
+
+# 67/67 (id/1194030/total)
+
+id: 1194030
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://example.com/ticket/89953
+Data: 
+Description: Member  added by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2006-12-22 02:46:16
+Attachments: 
+
+--
+
+# 67/67 (id/1194050/total)
+
+id: 1194050
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://example.com/ticket/89955
+Data: 
+Description: Member  added by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2006-12-22 02:54:23
+Attachments: 
+
+--
+
+# 67/67 (id/1194077/total)
+
+id: 1194077
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://example.com/ticket/89958
+Data: 
+Description: Member  added by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2006-12-22 02:54:51
+Attachments: 
+
+--
+
+# 67/67 (id/1194097/total)
+
+id: 1194097
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://example.com/ticket/89960
+Data: 
+Description: Member  added by RT_System
+Content: This transaction appears to have no content
+Creator: RT_System
+Created: 2006-12-22 02:55:16
+Attachments: 
+
+--
+
+# 67/67 (id/5241431/total)
+
+id: 5241431
+Ticket: 1
+TimeTaken: 0
+Type: Status
+Field: Status
+OldValue: resolved
+NewValue: open
+Data: 
+Description: Status changed from 'resolved' to 'open' by dave
+Content: This transaction appears to have no content
+Creator: dave
+Created: 2010-11-26 03:09:21
+Attachments: 
+
+--
+
+# 67/67 (id/5241432/total)
+
+id: 5241432
+Ticket: 1
+TimeTaken: 0
+Type: EmailRecord
+Field: 
+OldValue: 
+NewValue: 
+Data: <rt-3.4.6-2211-1290740961-1643.1-68-0@us.example>
+Description: Outgoing email recorded by RT_System
+
+Content: Someone did something to your ticket
+         
+         Fri Nov 26 14:09:21 2010: Request 1 was acted upon.
+         Transaction: Status changed from 'resolved' to 'open' by dave
+                Queue: zz-spare9
+              Subject: tell Nestor password for Ursa website
+                Owner: john
+           Requestors: eve@us.example
+               Status: open
+         Who did this: dave
+          Ticket <URL: https://rt.us.example/Ticket/Display.html?id=1 >
+         
+         
+         
+
+
+Creator: RT_System
+Created: 2010-11-26 03:09:22
+Attachments: 
+
+--
+
+# 67/67 (id/5241434/total)
+
+id: 5241434
+Ticket: 1
+TimeTaken: 0
+Type: Status
+Field: Status
+OldValue: open
+NewValue: resolved
+Data: 
+Description: Status changed from 'open' to 'resolved' by dave
+Content: This transaction appears to have no content
+Creator: dave
+Created: 2010-11-26 03:09:38
+Attachments: 
+
+--
+
+# 67/67 (id/5241435/total)
+
+id: 5241435
+Ticket: 1
+TimeTaken: 0
+Type: EmailRecord
+Field: 
+OldValue: 
+NewValue: 
+Data: <rt-3.4.6-2339-1290740978-1357.1-68-0@us.example>
+Description: Outgoing email recorded by RT_System
+
+Content: Someone did something to your ticket
+         
+         Fri Nov 26 14:09:38 2010: Request 1 was acted upon.
+         Transaction: Status changed from 'open' to 'resolved' by dave
+                Queue: zz-spare9
+              Subject: tell Nestor password for Ursa website
+                Owner: john
+           Requestors: eve@us.example
+               Status: resolved
+         Who did this: dave
+          Ticket <URL: https://rt.us.example/Ticket/Display.html?id=1 >
+         
+         
+         
+
+
+Creator: RT_System
+Created: 2010-11-26 03:09:39
+Attachments: 
+
+--
+
+# 67/67 (id/13820886/total)
+
+id: 13820886
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 05:05:29
+Attachments: 
+
+--
+
+# 67/67 (id/13820896/total)
+
+id: 13820896
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 05:05:56
+Attachments: 
+
+--
+
+# 67/67 (id/13820968/total)
+
+id: 13820968
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 05:10:08
+Attachments: 
+
+--
+
+# 67/67 (id/13821080/total)
+
+id: 13821080
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 05:12:01
+Attachments: 
+
+--
+
+# 67/67 (id/13821608/total)
+
+id: 13821608
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 05:24:10
+Attachments: 
+
+--
+
+# 67/67 (id/13821626/total)
+
+id: 13821626
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 05:24:21
+Attachments: 
+
+--
+
+# 67/67 (id/13825728/total)
+
+id: 13825728
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:12:51
+Attachments: 
+
+--
+
+# 67/67 (id/13825732/total)
+
+id: 13825732
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:13:06
+Attachments: 
+
+--
+
+# 67/67 (id/13825768/total)
+
+id: 13825768
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:14:17
+Attachments: 
+
+--
+
+# 67/67 (id/13825804/total)
+
+id: 13825804
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:15:23
+Attachments: 
+
+--
+
+# 67/67 (id/13825808/total)
+
+id: 13825808
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:16:06
+Attachments: 
+
+--
+
+# 67/67 (id/13825848/total)
+
+id: 13825848
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:18:30
+Attachments: 
+
+--
+
+# 67/67 (id/13825900/total)
+
+id: 13825900
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:20:07
+Attachments: 
+
+--
+
+# 67/67 (id/13826056/total)
+
+id: 13826056
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: DependedOnBy
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Dependency by ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:26:39
+Attachments: 
+
+--
+
+# 67/67 (id/13826060/total)
+
+id: 13826060
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: DependedOnBy
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Dependency by ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:27:04
+Attachments: 
+
+--
+
+# 67/67 (id/13826084/total)
+
+id: 13826084
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: DependedOnBy
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Dependency by ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:28:34
+Attachments: 
+
+--
+
+# 67/67 (id/13826236/total)
+
+id: 13826236
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: DependedOnBy
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Dependency by ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:34:40
+Attachments: 
+
+--
+
+# 67/67 (id/13826564/total)
+
+id: 13826564
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: DependedOnBy
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Dependency by ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:50:11
+Attachments: 
+
+--
+
+# 67/67 (id/13826586/total)
+
+id: 13826586
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: DependedOnBy
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Dependency by ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:50:36
+Attachments: 
+
+--
+
+# 67/67 (id/13826698/total)
+
+id: 13826698
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 08:57:41
+Attachments: 
+
+--
+
+# 67/67 (id/13827384/total)
+
+id: 13827384
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by bob
+Content: This transaction appears to have no content
+Creator: bob
+Created: 2012-12-13 09:30:09
+Attachments: 
+
+--
+
+# 67/67 (id/13827490/total)
+
+id: 13827490
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 09:33:23
+Attachments: 
+
+--
+
+# 67/67 (id/13827574/total)
+
+id: 13827574
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 09:35:23
+Attachments: 
+
+--
+
+# 67/67 (id/13827764/total)
+
+id: 13827764
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by alice
+Content: This transaction appears to have no content
+Creator: alice
+Created: 2012-12-13 09:46:09
+Attachments: 
+
+--
+
+# 67/67 (id/13829160/total)
+
+id: 13829160
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1318622
+Data: 
+Description: Member ticket #1318622 added by bob
+Content: This transaction appears to have no content
+Creator: bob
+Created: 2012-12-13 10:53:12
+Attachments: 
+
+--
+
+# 67/67 (id/13829214/total)
+
+id: 13829214
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1318622
+NewValue: 
+Data: 
+Description: Member ticket #1318622 deleted by bob
+Content: This transaction appears to have no content
+Creator: bob
+Created: 2012-12-13 10:53:52
+Attachments: 
+
+--
+
+# 67/67 (id/18722474/total)
+
+id: 18722474
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1784812
+Data: 
+Description: Member ticket #1784812 added by erin
+Content: This transaction appears to have no content
+Creator: erin
+Created: 2013-10-14 00:40:24
+Attachments: 
+
+--
+
+# 67/67 (id/18722620/total)
+
+id: 18722620
+Ticket: 1
+TimeTaken: 0
+Type: AddLink
+Field: HasMember
+OldValue: 
+NewValue: fsck.com-rt://us.example/ticket/1784812
+Data: 
+Description: Member ticket #1784812 added by erin
+Content: This transaction appears to have no content
+Creator: erin
+Created: 2013-10-14 00:40:28
+Attachments: 
+
+--
+
+# 67/67 (id/18722792/total)
+
+id: 18722792
+Ticket: 1
+TimeTaken: 0
+Type: DeleteLink
+Field: HasMember
+OldValue: fsck.com-rt://us.example/ticket/1784812
+NewValue: 
+Data: 
+Description: Member ticket #1784812 deleted by erin
+Content: This transaction appears to have no content
+Creator: erin
+Created: 2013-10-14 00:41:11
+Attachments: 
+
+RT/3.4.6 200 Ok
+
+
