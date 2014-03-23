@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
 
 require 'rest_client'
+require 'tmail'
 require 'mail'
 require 'mime/types' # requires both nokogiri and rcov.  Yuck.
 require 'date'
@@ -540,9 +541,10 @@ class Roust
         th = Mail.new(item)
         next if not comments and th["type"].to_s =~ /Comment/ # skip comments
         reply = {}
-        th.header.fields.each do |header|
-          k = header.name.to_s.downcase
-          v = header.value.to_s
+        headers = TMail::Mail.parse(resp)
+        headers.each_header do |key,value|
+          k = key.to_s.downcase
+          v = value.to_s
 
           attachments = []
           case k
