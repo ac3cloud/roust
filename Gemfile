@@ -4,6 +4,8 @@ source 'https://rubygems.org'
 
 gemspec
 
+gem 'tmail'
+
 group :development do
   gem 'rspec'
   gem 'colorize'
