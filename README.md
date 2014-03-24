@@ -3,7 +3,7 @@ Roust
 
 Roust is a Ruby client for [Request Tracker](http://www.bestpractical.com/rt/)'s REST API.
 
-It is a fork of [rt-client](http://rubygems.org/gems/rt-client) by Tom Lahti.
+It is a complete fork of [rt-client](http://rubygems.org/gems/rt-client) by Tom Lahti, and shares little ancestry.
 
 Features
 --------
@@ -43,7 +43,7 @@ credentials = {
 rt = Roust.new(credentials)
 rt.authenticated? # => true
 
-# Query RT 
+# Query RT
 rt.list(:query => "id = 1 or id = 2") # => [["1", "A subject"], ["2", "Another subject"]]
 
 # Fetch ticket metadata
