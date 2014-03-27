@@ -86,12 +86,10 @@ Releasing
 ---------
 
 1. Bump the version in `lib/roust/version.rb`
-2. Add an entry to `CHANGELOG.md`
-3. Run a `bundle` to update any RubyGems dependencies.
-4. `git commit` everything.
-5. git tag the version git tag X.Y.Z
-6. Build the gem with `rake build`
-
+2. Run a `bundle` to update any RubyGems dependencies.
+3. git tag the version git tag X.Y.Z
+4. Build the gem with `rake build`
+5. Push the gem with `rake push`
 
 
 TODO
