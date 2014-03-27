@@ -198,14 +198,19 @@ class Roust
     reply = {}
     resp = @site["ticket/#{sid}/links/show"].get
     resp.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"") # toss the HTTP response
-    resp.gsub!(/\n\n/,"\n") # remove double spacing, TMail stops at a blank line
+    resp.gsub!(/\n\n/,"\n") # remove double spacing, Mail stops at a blank line
     while resp.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/) #replace CF spaces with underscores
       resp.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
     end
     return {:error => resp, }  if resp =~ /does not exist./
-    th = TMail::Mail.parse(resp)
-    th.each_header do |k,v|
-      reply["#{k}"] = v.to_s
+    items = resp.split("\n--\n")
+    items.each do |item|
+      th = Mail.new(item)
+      th.header.fields.each do |header|
+        k = header.name.to_s.downcase
+        v = header.value.to_s
+        reply["#{k}"] = v.to_s
+      end
     end
     reply
   end
@@ -460,23 +465,30 @@ class Roust
     tickets = resp.split("\n--\n") # -- occurs between each ticket
     tickets.each do |ticket|
       ticket.gsub!(/^\n/,"") # strip leading blank lines
-      ticket.gsub!(/\n\n/,"\n") # remove blank lines for TMail
+      ticket.gsub!(/\n\n/,"\n") # remove blank lines for Mail
       while ticket.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/) #replace CF spaces with underscores
         ticket.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
       end
-      th = TMail::Mail.parse(ticket)
+      items = ticket.split("\n--\n")
       reply = {}
-      th.each_header do |k,v|
-        case k
-          when 'created','due','told','lastupdated','started'
-            begin
-              vv = DateTime.parse(v.to_s)
-              reply["#{k}"] = vv.strftime("%Y-%m-%d %H:%M:%S")
-            rescue ArgumentError
-              reply["#{k}"] = v.to_s
-            end
-          else
-            reply["#{k}"] = v.to_s
+      items.each do |item|
+        item.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
+        th = Mail.new(item)
+        th.header.fields.each do |header|
+          k = header.name.to_s.downcase
+          v = header.value.to_s
+          case k
+            when 'created','due','told','lastupdated','started'
+              begin
+                vv = DateTime.parse(v)
+                reply["#{k}"] = vv.strftime("%Y-%m-%d %H:%M:%S")
+              rescue ArgumentError => e
+                p "e #{e}"
+                reply["#{k}"] = v
+              end
+            else
+              reply["#{k}"] = v
+          end
         end
       end
       replies.push reply
@@ -534,9 +546,10 @@ class Roust
         resp.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
       end
       items = resp.split("\n--\n")
-
       list = []
       items.each do |item|
+        #yes, this messes with the "content:" field but that's the one that's upsetting Mail.new
+        item.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
         th = Mail.new(item)
         next if not comments and th["type"].to_s =~ /Comment/ # skip comments
         reply = {}
@@ -567,7 +580,7 @@ class Roust
             end
           when "content"
             reply["content"] = v.to_s
-            #temp = item.match(/^Content: (.*?)^\w+:/m) # TMail strips line breaks
+            #temp = item.match(/^Content: (.*?)^\w+:/m) # Mail strips line breaks
             #reply["content"] = temp[1] if temp.class != NilClass
           else
             reply["#{k}"] = v.to_s
@@ -607,35 +620,39 @@ class Roust
     while resp.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/) #replace CF spaces with underscores
       resp.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
     end
-    th = TMail::Mail.parse(resp)
-    attachments = []
-    th.each_header do |k,v|
-      case k
-        when "attachments"
-          temp = resp.match(/Attachments:\s*(.*)[^\w|$]/m)
-          if temp.class != NilClass
-            atarr = temp[1].split("\n")
-            atarr.map { |a| a.gsub!(/^\s*/,"") }
-            atarr.each do |a|
-              i = a.match(/(\d+):\s*(.*)/)
-              s={}
-              s[:id] = i[1]
-              s[:name] = i[2]
-              sz = i[2].match(/(.*?)\s*\((.*?)\)/)
-              if sz.class == MatchData
-                s[:name] = sz[1]
-                s[:size] = sz[2]
+    items = resp.split("\n--\n")
+    items.each do |item|
+      th = Mail.new(item)
+      th.header.fields.each do |header|
+        k = header.name.to_s.downcase
+        v = header.value.to_s
+        case k
+          when "attachments"
+            temp = resp.match(/Attachments:\s*(.*)[^\w|$]/m)
+            if temp.class != NilClass
+              atarr = temp[1].split("\n")
+              atarr.map { |a| a.gsub!(/^\s*/,"") }
+              atarr.each do |a|
+                i = a.match(/(\d+):\s*(.*)/)
+                s={}
+                s[:id] = i[1]
+                s[:name] = i[2]
+                sz = i[2].match(/(.*?)\s*\((.*?)\)/)
+                if sz.class == MatchData
+                  s[:name] = sz[1]
+                  s[:size] = sz[2]
+                end
+                attachments.push s
               end
-              attachments.push s
+              reply["#{k}"] = attachments
             end
-            reply["#{k}"] = attachments
-          end
-        when "content"
-          reply["content"] = v.to_s
-          temp = resp.match(/^Content: (.*?)^\w+:/m) # TMail strips line breaks
-          reply["content"] = temp[1] if temp.class != NilClass
-        else
-          reply["#{k}"] = v.to_s
+          when "content"
+            reply["content"] = v.to_s
+            temp = resp.match(/^Content: (.*?)^\w+:/m) # Mail strips line breaks
+            reply["content"] = temp[1] if temp.class != NilClass
+          else
+            reply["#{k}"] = v.to_s
+        end
       end
     end
     reply
@@ -662,10 +679,19 @@ class Roust
     while resp.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/) #replace CF spaces with underscores
       resp.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
     end
-    th = TMail::Mail.parse(resp)
     list = []
     pattern = /(\d+:\s.*?\)),/
-    match = pattern.match(th['attachments'].to_s)
+    items = resp.split("\n--\n")
+    attachment_string = ""
+    items.each do |item|
+      th = Mail.new(item)
+      th.header.fields.each do |header|
+        if header.name.to_s.downcase == "attachments"
+          attachment_string = attachment_string + header.value.to_s
+        end
+      end
+    end
+    match = pattern.match(attachment_string)
     while match != nil
       list.push match[0]
       s = match.post_match
@@ -721,10 +747,15 @@ class Roust
     while resp.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/) #replace CF spaces with underscores
       resp.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
     end
-    headers = TMail::Mail.parse(resp)
     reply = {}
-    headers.each_header do |k,v|
-      reply["#{k}"] = v.to_s
+    items = resp.split("\n--\n")
+    items.each do |item|
+      th = Mail.new(item)
+      th.header.fields.each do |header|
+        k = header.name.to_s.downcase
+        v = header.value.to_s
+        reply["#{k}"] = v.to_s
+      end
     end
     content = resp.match(/Content:\s+(.*)/m)[1]
     content.gsub!(/\n\s{9}/,"\n") # strip leading spaces on each line
