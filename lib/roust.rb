@@ -222,6 +222,48 @@ class Roust
     end
   end
 
+  def history(id, opts={})
+    options = {
+      :format   => 'short',
+      :comments => false
+    }.merge(opts)
+
+    format   = options[:format]
+    comments = options[:comments]
+    params = {
+      :format => format[0]
+    }
+
+    response = self.class.get("/ticket/#{id}/history", :query => params)
+
+    body, status = handle_response(response)
+
+    case format
+    when 'short'
+      parse_short_history(body, :comments => comments)
+    when 'long'
+      parse_long_history(body, :comments => comments)
+    end
+  end
+
+  def user(email)
+    response = self.class.get("/user/#{email}")
+
+    body, status = handle_response(response)
+    case body
+    when /No user named/
+      {}
+    else
+      body.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
+      message = Mail.new(body)
+      Hash[message.header.fields.map {|header|
+        key   = header.name.to_s.downcase
+        value = header.value.to_s
+        [ key, value ]
+      }]
+    end
+  end
+
   private
   def handle_response(response)
     body   = response.body
@@ -243,5 +285,64 @@ class Roust
     else
       "Needs attributes: #{missing.join(', ')}"
     end
+  end
+
+  def parse_short_history(body, opts={})
+    comments = opts[:comments]
+    regex = comments ? '^\d+:' : '^\d+: [^Comments]'
+    h = body.split("\n").select { |l| l =~ /#{regex}/ }
+    h.map { |l| l.split(": ", 2) }
+  end
+
+  def parse_long_history(body, opts={})
+    comments = opts[:comments]
+    items = body.split("\n--\n")
+    list = []
+    items.each do |item|
+      # Yes, this messes with the "content:" field but that's the one that's upsetting Mail.new
+      item.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
+      th = Mail.new(item)
+      next if not comments and th["type"].to_s =~ /Comment/ # skip comments
+      reply = {}
+
+      th.header.fields.each_with_index do |header, index|
+        next if index == 0
+
+        k = header.name.to_s.downcase
+        v = header.value.to_s
+
+        attachments = []
+        case k
+        when "attachments"
+          temp = item.match(/Attachments:\s*(.*)/m)
+          if temp.class != NilClass
+            atarr = temp[1].split("\n")
+            atarr.map { |a| a.gsub!(/^\s*/,"") }
+            atarr.each do |a|
+              i = a.match(/(\d+):\s*(.*)/)
+              s={}
+              s[:id] = i[1].to_s
+              s[:name] = i[2].to_s
+              sz = i[2].match(/(.*?)\s*\((.*?)\)/)
+              if sz.class == MatchData
+                s[:name] = sz[1].to_s
+                s[:size] = sz[2].to_s
+              end
+              attachments.push s
+            end
+            reply["attachments"] = attachments
+          end
+        when "content"
+          reply["content"] = v.to_s
+          #temp = item.match(/^Content: (.*?)^\w+:/m) # Mail strips line breaks
+          #reply["content"] = temp[1] if temp.class != NilClass
+        else
+          reply["#{k}"] = v.to_s
+        end
+      end
+      list.push(reply)
+    end
+
+    return list
   end
 end
