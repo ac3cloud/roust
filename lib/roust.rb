@@ -289,9 +289,9 @@ class Roust
 
   def parse_short_history(body, opts={})
     comments = opts[:comments]
-    regex = comments ? '^\d+:' : '^\d+: [^Comments]'
-    h = body.split("\n").select { |l| l =~ /#{regex}/ }
-    h.map { |l| l.split(": ", 2) }
+    regex    = comments ? '^\d+:' : '^\d+: [^Comments]'
+    history  = body.split("\n").select { |l| l =~ /#{regex}/ }
+    history.map { |l| l.split(": ", 2) }
   end
 
   def parse_long_history(body, opts={})
@@ -301,18 +301,18 @@ class Roust
     items.each do |item|
       # Yes, this messes with the "content:" field but that's the one that's upsetting Mail.new
       item.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
-      th = Mail.new(item)
-      next if not comments and th["type"].to_s =~ /Comment/ # skip comments
+      history = Mail.new(item)
+      next if not comments and history['type'].to_s =~ /Comment/ # skip comments
       reply = {}
 
-      th.header.fields.each_with_index do |header, index|
+      history.header.fields.each_with_index do |header, index|
         next if index == 0
 
-        k = header.name.to_s.downcase
-        v = header.value.to_s
+        key   = header.name.to_s.downcase
+        value = header.value.to_s
 
         attachments = []
-        case k
+        case key
         when "attachments"
           temp = item.match(/Attachments:\s*(.*)/m)
           if temp.class != NilClass
@@ -320,27 +320,26 @@ class Roust
             atarr.map { |a| a.gsub!(/^\s*/,"") }
             atarr.each do |a|
               i = a.match(/(\d+):\s*(.*)/)
-              s={}
-              s[:id] = i[1].to_s
-              s[:name] = i[2].to_s
+              s = {
+                :id   => i[1].to_s,
+                :name => i[2].to_s
+              }
               sz = i[2].match(/(.*?)\s*\((.*?)\)/)
               if sz.class == MatchData
                 s[:name] = sz[1].to_s
                 s[:size] = sz[2].to_s
               end
-              attachments.push s
+              attachments << s
             end
             reply["attachments"] = attachments
           end
         when "content"
-          reply["content"] = v.to_s
-          #temp = item.match(/^Content: (.*?)^\w+:/m) # Mail strips line breaks
-          #reply["content"] = temp[1] if temp.class != NilClass
+          reply["content"] = value
         else
-          reply["#{k}"] = v.to_s
+          reply["#{key}"] = value
         end
       end
-      list.push(reply)
+      list << reply
     end
 
     return list
