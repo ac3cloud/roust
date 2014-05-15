@@ -21,9 +21,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_runtime_dependency 'rest-client',         ">= 0.9"
-  s.add_runtime_dependency 'mail',                ">= 2.5.4"
-  s.add_runtime_dependency 'mime-types',          ">= 1.16"
-  s.add_runtime_dependency 'archive-tar-minitar', ">= 0.5"
-  s.add_runtime_dependency 'nokogiri',            ">= 1.2"
+  s.add_runtime_dependency 'mail',                '>= 2.5.4'
+  s.add_runtime_dependency 'httparty',            '>= 0.13.1'
+  s.add_runtime_dependency 'activesupport',       '>= 4.1.0'
 end

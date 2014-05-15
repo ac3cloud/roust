@@ -10,20 +10,19 @@ describe "Roust" do
     }
     mocks_path = Pathname.new(__FILE__).parent.join('mocks')
 
-    stub_request(:post, "http://rt.example.org/REST/1.0/").
+    stub_request(:post, "http://rt.example.org/index.html").
       with(:body => {
             "user"=>"admin",
             "pass"=>"password",
            }).
       to_return(:status => 200, :body => "", :headers => {})
 
-
     stub_request(:get, "http://rt.example.org/REST/1.0/ticket/1/show").
       to_return(:status  => 200,
                 :body    => mocks_path.join('ticket-1-show.txt').read,
                 :headers => {})
 
-    stub_request(:get, "http://rt.example.org/REST/1.0/search/ticket/?format=s&orderby=&query=id%20=%201%20or%20id%20=%202").
+    stub_request(:get, "http://rt.example.org/REST/1.0/search/ticket?format=s&orderby=%2Bid&query%5Bquery%5D=id%20=%201%20or%20id%20=%202").
        to_return(:status  => 200,
                  :body    => mocks_path.join('ticket-search-1-or-2.txt').read,
                  :headers => {})
@@ -53,7 +52,7 @@ describe "Roust" do
     rt = Roust.new(@credentials)
     rt.authenticated?.should be_true
 
-    results = rt.list(:query => "id = 1 or id = 2")
+    results = rt.search(:query => "id = 1 or id = 2")
     results.size.should == 2
     results.each do |result|
       result.size.should == 2
@@ -67,18 +66,18 @@ describe "Roust" do
     ticket = rt.show("1")
     ticket.should_not be_nil
 
-    attrs = %w(id subject queue) +
-            %w(requestors cc admincc owner creator) +
-            %w(resolved status) +
-            %w(starts started timeleft due timeworked timeestimated) +
-            %w(lastupdated created told) +
-            %w(priority finalpriority initialpriority)
+    attrs = %w(id Subject Queue) +
+            %w(Requestors Cc AdminCc Owner Creator) +
+            %w(Resolved Status) +
+            %w(Starts Started TimeLeft Due TimeWorked TimeEstimated) +
+            %w(LastUpdated Created Told) +
+            %w(Priority FinalPriority InitialPriority)
 
     attrs.each do |attr|
       ticket[attr].should_not be_nil, "#{attr} key doesn't exist"
     end
 
-    %w(requestors cc admincc).each do |field|
+    %w(Requestors Cc AdminCc).each do |field|
       ticket[field].size.should > 1
     end
   end
