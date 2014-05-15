@@ -44,7 +44,7 @@ rt = Roust.new(credentials)
 rt.authenticated? # => true
 
 # Query RT
-rt.list(:query => "id = 1 or id = 2") # => [["1", "A subject"], ["2", "Another subject"]]
+rt.search(:query => "id = 1 or id = 2") # => [["1", "A subject"], ["2", "Another subject"]]
 
 # Fetch ticket metadata
 rt.show("1") # => { {"cc"=>["dan@us.example", "dave@them.example"], "owner"=>"bob", "creator"=>"alice", "status"=>"open", … }
