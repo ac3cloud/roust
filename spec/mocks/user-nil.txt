@@ -1,0 +1,5 @@
+RT/3.4.6 200 Ok
+
+# No user named nil exists.
+
+id: user/nil
