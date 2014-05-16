@@ -55,6 +55,10 @@ rt.history("1", :format => "long") # => [{"id"=>"1", "ticket"=>"1", "timetaken"=
 
 # Fetch user details
 rt.user("dan@us.example") # => {"id"=>"user/160000", "name"=>"dan", "password"=>"********", "emailaddress"=>"dan@us.example", "realname"=>"Dan Smith", "nickname"=>"dan", … }
+
+# Fetch queue details
+rt.queue(1) # => {"id"=>"queue/1", "name"=>"sales", "description"=>"Sales", "correspondaddress"=>"sales@us.example", "commentaddress"=>"rt-comment@us.example", … }
+rt.queue('sales') # => {"id"=>"queue/1", "name"=>"sales", "description"=>"Sales", "correspondaddress"=>"sales@us.example", "commentaddress"=>"rt-comment@us.example", … }
 ```
 
 
