@@ -246,13 +246,14 @@ class Roust
     end
   end
 
-  def user(email)
-    response = self.class.get("/user/#{email}")
+  # id can be numeric (e.g. 28) or textual (e.g. john)
+  def user(id)
+    response = self.class.get("/user/#{id}")
 
     body, status = handle_response(response)
     case body
     when /No user named/
-      {}
+     nil
     else
       body.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
       message = Mail.new(body)
