@@ -1,0 +1,11 @@
+RT/3.4.6 200 Ok
+
+id: queue/28
+Name: support
+Description: Bulletproof Networks Support
+CorrespondAddress: support@bulletproof.net.au
+CommentAddress: rt-comment@bulletproof.net
+InitialPriority: 101
+FinalPriority: 100
+DefaultDueIn: 1
+
