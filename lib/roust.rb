@@ -246,8 +246,27 @@ class Roust
     end
   end
 
+  # id can be numeric (e.g. 28) or textual (e.g. sales)
+  def queue(id)
+    response = self.class.get("/queue/#{id}")
+
+    body, status = handle_response(response)
+    case body
+    when /No queue named/
+      nil
+    else
+      body.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
+      message = Mail.new(body)
+      Hash[message.header.fields.map {|header|
+        key   = header.name.to_s.downcase
+        value = header.value.to_s
+        [ key, value ]
+      }]
+    end
+  end
+
   # id can be numeric (e.g. 28) or textual (e.g. john)
-  def user(id)
+  def user_show(id)
     response = self.class.get("/user/#{id}")
 
     body, status = handle_response(response)
@@ -265,22 +284,53 @@ class Roust
     end
   end
 
-  # id can be numeric (e.g. 28) or textual (e.g. sales)
-  def queue(id)
-    response = self.class.get("/queue/#{id}")
+  alias :user :user_show
+
+  def user_update(id, attrs)
+    default_attrs = {
+      'id' => "user/#{id}"
+    }
+    attrs = default_attrs.merge(attrs).stringify_keys!
+
+    content = attrs.map { |k,v|
+      # Don't lowercase strings if they're already camel cased.
+      k = case
+      when k.is_a?(Symbol)
+        k.to_s
+      when k == 'id'
+        k
+      when k =~ /^[a-z]/
+        k.capitalize
+      else
+        k
+      end
+
+      v = v.join(', ') if v.respond_to?(:join)
+
+      "#{k}: #{v}"
+    }.join("\n")
+
+    response = self.class.post(
+      "/user/#{id}/edit",
+      :body => {
+        :content => content
+      },
+    )
 
     body, status = handle_response(response)
+
     case body
-    when /No queue named/
-      nil
+    when /^# You are not allowed to modify user \d+/
+      { 'error' => body.strip }
+    when /^# Syntax error/
+      { 'error' => body.strip }
+    when /^# User (.+) updated/
+      id = body[/^# User (.+) updated/, 1]
+      user_show(id)
     else
-      body.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
-      message = Mail.new(body)
-      Hash[message.header.fields.map {|header|
-        key   = header.name.to_s.downcase
-        value = header.value.to_s
-        [ key, value ]
-      }]
+      # We should never hit this, but if we do, just pass it through and
+      # surprise the user (!!!).
+      body
     end
   end
 

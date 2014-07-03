@@ -9,4 +9,5 @@ group :development do
   gem 'colorize'
   gem 'rake'
   gem 'webmock'
+  gem 'pry'
 end
