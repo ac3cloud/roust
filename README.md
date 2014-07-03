@@ -85,6 +85,7 @@ bundle exec rake
 
 Roust has reasonable test coverage of the core features mentioned above. It has some other features that have been ported from the original rt-client implementation that are not tested (and are probably broken). See the TODO section for more details.
 
+[![build status](https://travis-ci.org/bulletproofnetworks/roust.svg?branch=master)](https://travis-ci.org/bulletproofnetworks/roust)
 
 Releasing
 ---------
