@@ -46,7 +46,7 @@ class Roust
   def show(id)
     response = self.class.get("/ticket/#{id}/show")
 
-    body, status = handle_response(response)
+    body, status = explode_response(response)
 
     if match = body.match(/^# (Ticket (\d+) does not exist\.)/)
       return { 'error' => match[1] }
@@ -136,7 +136,7 @@ class Roust
       },
     )
 
-    body, status = handle_response(response)
+    body, status = explode_response(response)
 
     case body
     when /^# Could not create ticket/
@@ -155,28 +155,7 @@ class Roust
   end
 
   def update(id, attrs)
-    default_attrs = {
-      'id' => "ticket/#{id}"
-    }
-    attrs = default_attrs.merge(attrs).stringify_keys!
-
-    content = attrs.map { |k,v|
-      # Don't lowercase strings if they're already camel cased.
-      k = case
-      when k.is_a?(Symbol)
-        k.to_s
-      when k == 'id'
-        k
-      when k =~ /^[a-z]/
-        k.capitalize
-      else
-        k
-      end
-
-      v = v.join(', ') if v.respond_to?(:join)
-
-      "#{k}: #{v}"
-    }.join("\n")
+    content = compose_content('ticket', id, attrs)
 
     response = self.class.post(
       "/ticket/#{id}/edit",
@@ -185,7 +164,7 @@ class Roust
       },
     )
 
-    body, status = handle_response(response)
+    body, status = explode_response(response)
 
     case body
     when /^# You are not allowed to modify ticket \d+/
@@ -236,7 +215,7 @@ class Roust
 
     response = self.class.get("/ticket/#{id}/history", :query => params)
 
-    body, status = handle_response(response)
+    body, status = explode_response(response)
 
     case format
     when 'short'
@@ -250,7 +229,7 @@ class Roust
   def queue(id)
     response = self.class.get("/queue/#{id}")
 
-    body, status = handle_response(response)
+    body, status = explode_response(response)
     case body
     when /No queue named/
       nil
@@ -269,7 +248,7 @@ class Roust
   def user_show(id)
     response = self.class.get("/user/#{id}")
 
-    body, status = handle_response(response)
+    body, status = explode_response(response)
     case body
     when /No user named/
      nil
@@ -287,8 +266,36 @@ class Roust
   alias :user :user_show
 
   def user_update(id, attrs)
+    content = compose_content('user', id, attrs)
+
+    response = self.class.post(
+      "/user/#{id}/edit",
+      :body => {
+        :content => content
+      },
+    )
+
+    body, status = explode_response(response)
+
+    case body
+    when /^# You are not allowed to modify user \d+/
+      { 'error' => body.strip }
+    when /^# Syntax error/
+      { 'error' => body.strip }
+    when /^# User (.+) updated/
+      id = body[/^# User (.+) updated/, 1]
+      user_show(id)
+    else
+      # We should never hit this, but if we do, just pass it through and
+      # surprise the user (!!!).
+      body
+    end
+  end
+
+  private
+  def compose_content(type, id, attrs)
     default_attrs = {
-      'id' => "user/#{id}"
+      'id' => [ type, id ].join('/')
     }
     attrs = default_attrs.merge(attrs).stringify_keys!
 
@@ -309,33 +316,9 @@ class Roust
 
       "#{k}: #{v}"
     }.join("\n")
-
-    response = self.class.post(
-      "/user/#{id}/edit",
-      :body => {
-        :content => content
-      },
-    )
-
-    body, status = handle_response(response)
-
-    case body
-    when /^# You are not allowed to modify user \d+/
-      { 'error' => body.strip }
-    when /^# Syntax error/
-      { 'error' => body.strip }
-    when /^# User (.+) updated/
-      id = body[/^# User (.+) updated/, 1]
-      user_show(id)
-    else
-      # We should never hit this, but if we do, just pass it through and
-      # surprise the user (!!!).
-      body
-    end
   end
 
-  private
-  def handle_response(response)
+  def explode_response(response)
     body   = response.body
     status = body[/RT\/\d+\.\d+\.\d+\s(\d{3}\s.*)\n/, 1]
 
