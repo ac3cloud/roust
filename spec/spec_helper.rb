@@ -7,20 +7,39 @@
 
 require 'pathname'
 lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
-$: << lib
+$LOAD_PATH << lib
 require 'webmock/rspec'
 
 RSpec.configure do |config|
-  # Use color in STDOUT
-  config.color_enabled = true
-
   # Use color not only in STDOUT but also in pagers and files
   config.tty = true
-
-  # Use the specified formatter
-  config.formatter = :documentation # :progress, :html, :textmate
-
-  # Rspec 3 forward compatibility
-  config.treat_symbols_as_metadata_keys_with_true_values = true
 end
 
+# Boilerplate for all tests.
+#
+# All tests need to authenticate before they can do anything, so mock it out.
+RSpec.shared_context 'credentials' do
+  let :credentials do
+    {
+      :server   => 'http://rt.example.org',
+      :username => 'admin',
+      :password => 'password'
+    }
+  end
+
+  before(:each) do
+    mocks_path = Pathname.new(__FILE__).parent.join('mocks')
+
+    stub_request(:post, 'http://rt.example.org/index.html')
+      .with(:body => {
+              'user' => 'admin',
+              'pass' => 'password'
+            })
+      .to_return(:status => 200, :body => '', :headers => {})
+
+    stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/1/show')
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-1-show.txt').read,
+                 :headers => {})
+  end
+end

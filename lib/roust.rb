@@ -2,11 +2,10 @@ require 'httparty'
 require 'mail'
 require 'active_support/core_ext/hash'
 
-class Unauthenticated < Exception ; end
+class Unauthenticated < Exception; end
 
 class Roust
   include HTTParty
-  #debug_output
 
   def initialize(credentials)
     server   = credentials[:server]
@@ -46,7 +45,7 @@ class Roust
   def show(id)
     response = self.class.get("/ticket/#{id}/show")
 
-    body, status = explode_response(response)
+    body, _ = explode_response(response)
 
     if match = body.match(/^# (Ticket (\d+) does not exist\.)/)
       return { 'error' => match[1] }
@@ -71,14 +70,14 @@ class Roust
     body.gsub!(/\n\n/, "\n")
 
     %w(Requestors Cc AdminCc).each do |field|
-      body.gsub!(/^#{field}:(.+)^\n/m) do |match|
-        match.strip.split(/,\s+/).join(', ').strip
+      body.gsub!(/^#{field}:(.+)^\n/m) do |m|
+        m.strip.split(/,\s+/).join(', ').strip
       end
     end
 
     message = Mail.new(body)
 
-    hash = Hash[message.header.fields.map {|header|
+    hash = Hash[message.header.fields.map { |header|
       key   = header.name.to_s
       value = header.value.to_s
       [ key, value ]
@@ -88,7 +87,7 @@ class Roust
       hash[field] = hash[field].split(', ') if hash[field]
     end
 
-    hash["id"] = hash["id"].split('/').last
+    hash['id'] = hash['id'].split('/').last
 
     hash
   end
@@ -103,40 +102,24 @@ class Roust
       return {'error' => error }
     end
 
-    attrs['Text'].gsub!(/\n/,"\n ") if attrs['Text'] # insert a space on continuation lines.
+    attrs['Text'].gsub!(/\n/, "\n ") if attrs['Text'] # insert a space on continuation lines.
 
     # We can't set more than one AdminCc when creating a ticket. WTF RT.
     #
     # Delete it from the ticket we are creating, and we'll update the ticket
     # after we've created.
-    admincc = attrs.delete("AdminCc")
+    admincc = attrs.delete('AdminCc')
 
-    content = attrs.map { |k,v|
-      # Don't lowercase strings if they're already camel cased.
-      k = case
-      when k.is_a?(Symbol)
-        k.to_s
-      when k == 'id'
-        k
-      when k =~ /^[a-z]/
-        k.capitalize
-      else
-        k
-      end
-
-      v = v.join(', ') if v.respond_to?(:join)
-
-      "#{k}: #{v}"
-    }.join("\n")
+    content = compose_content('ticket', attrs['id'], attrs)
 
     response = self.class.post(
-      "/ticket/new",
+      '/ticket/new',
       :body => {
         :content => content
-      },
+      }
     )
 
-    body, status = explode_response(response)
+    body, _ = explode_response(response)
 
     case body
     when /^# Could not create ticket/
@@ -164,7 +147,7 @@ class Roust
       },
     )
 
-    body, status = explode_response(response)
+    body, _ = explode_response(response)
 
     case body
     when /^# You are not allowed to modify ticket \d+/
@@ -187,21 +170,21 @@ class Roust
 
   def search(query)
     params = {
-      :query  => query,
-      :format => 's',
+      :query   => query,
+      :format  => 's',
       :orderby => '+id'
     }
-    response = self.class.get("/search/ticket", :query => params)
-    body = response.body
-    body.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/,"")
+    response = self.class.get('/search/ticket', :query => params)
+    # FIXME(auxesis) use explode_response here
 
+    body, _ = explode_response(response)
     body.split("\n").map do |t|
       id, subject = t.split(': ', 2)
       {'id' => id, 'Subject' => subject}
     end
   end
 
-  def history(id, opts={})
+  def history(id, opts = {})
     options = {
       :format   => 'short',
       :comments => false
@@ -215,7 +198,7 @@ class Roust
 
     response = self.class.get("/ticket/#{id}/history", :query => params)
 
-    body, status = explode_response(response)
+    body, _ = explode_response(response)
 
     case format
     when 'short'
@@ -229,14 +212,14 @@ class Roust
   def queue(id)
     response = self.class.get("/queue/#{id}")
 
-    body, status = explode_response(response)
+    body, _ = explode_response(response)
     case body
     when /No queue named/
       nil
     else
-      body.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
+      body.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
       message = Mail.new(body)
-      Hash[message.header.fields.map {|header|
+      Hash[message.header.fields.map { |header|
         key   = header.name.to_s.downcase
         value = header.value.to_s
         [ key, value ]
@@ -248,14 +231,14 @@ class Roust
   def user_show(id)
     response = self.class.get("/user/#{id}")
 
-    body, status = explode_response(response)
+    body, _ = explode_response(response)
     case body
     when /No user named/
-     nil
+      nil
     else
-      body.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
+      body.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
       message = Mail.new(body)
-      Hash[message.header.fields.map {|header|
+      Hash[message.header.fields.map { |header|
         key   = header.name.to_s.downcase
         value = header.value.to_s
         [ key, value ]
@@ -263,7 +246,7 @@ class Roust
     end
   end
 
-  alias :user :user_show
+  alias_method :user, :user_show
 
   def user_update(id, attrs)
     content = compose_content('user', id, attrs)
@@ -272,10 +255,10 @@ class Roust
       "/user/#{id}/edit",
       :body => {
         :content => content
-      },
+      }
     )
 
-    body, status = explode_response(response)
+    body, _ = explode_response(response)
 
     case body
     when /^# You are not allowed to modify user \d+/
@@ -293,45 +276,48 @@ class Roust
   end
 
   private
+
   def compose_content(type, id, attrs)
     default_attrs = {
       'id' => [ type, id ].join('/')
     }
     attrs = default_attrs.merge(attrs).stringify_keys!
 
-    content = attrs.map { |k,v|
+    content = attrs.map do |k, v|
       # Don't lowercase strings if they're already camel cased.
       k = case
-      when k.is_a?(Symbol)
-        k.to_s
-      when k == 'id'
-        k
-      when k =~ /^[a-z]/
-        k.capitalize
-      else
-        k
-      end
+          when k.is_a?(Symbol)
+            k.to_s
+          when k == 'id'
+            k
+          when k =~ /^[a-z]/
+            k.capitalize
+          else
+            k
+          end
 
       v = v.join(', ') if v.respond_to?(:join)
 
       "#{k}: #{v}"
-    }.join("\n")
+    end
+
+    content.join("\n")
   end
 
   def explode_response(response)
     body   = response.body
     status = body[/RT\/\d+\.\d+\.\d+\s(\d{3}\s.*)\n/, 1]
 
-    body.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n/,"")
+    body.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n/, '')
     body = body.empty? ? nil : body.lstrip
 
-    raise Unauthenticated, "Invalid username or password" if status =~ /401 Credentials required/
+    raise Unauthenticated, 'Invalid username or password' if status =~ /401 Credentials required/
 
     return body, status
   end
 
   def create_invalid?(attrs)
-    missing = %w(id Subject Queue).find_all {|k| !attrs.include?(k) }
+    missing = %w(id Subject Queue).select { |k| !attrs.include?(k) }
 
     if missing.empty?
       return false
@@ -340,20 +326,20 @@ class Roust
     end
   end
 
-  def parse_short_history(body, opts={})
+  def parse_short_history(body, opts = {})
     comments = opts[:comments]
     regex    = comments ? '^\d+:' : '^\d+: [^Comments]'
     history  = body.split("\n").select { |l| l =~ /#{regex}/ }
-    history.map { |l| l.split(": ", 2) }
+    history.map { |l| l.split(': ', 2) }
   end
 
-  def parse_long_history(body, opts={})
+  def parse_long_history(body, opts = {})
     comments = opts[:comments]
     items = body.split("\n--\n")
     list = []
     items.each do |item|
       # Yes, this messes with the "content:" field but that's the one that's upsetting Mail.new
-      item.gsub!(/\n\s*\n/,"\n") # remove blank lines for Mail
+      item.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
       history = Mail.new(item)
       next if not comments and history['type'].to_s =~ /Comment/ # skip comments
       reply = {}
@@ -366,11 +352,11 @@ class Roust
 
         attachments = []
         case key
-        when "attachments"
+        when 'attachments'
           temp = item.match(/Attachments:\s*(.*)/m)
           if temp.class != NilClass
             atarr = temp[1].split("\n")
-            atarr.map { |a| a.gsub!(/^\s*/,"") }
+            atarr.map { |a| a.gsub!(/^\s*/, '') }
             atarr.each do |a|
               i = a.match(/(\d+):\s*(.*)/)
               s = {
@@ -384,10 +370,10 @@ class Roust
               end
               attachments << s
             end
-            reply["attachments"] = attachments
+            reply['attachments'] = attachments
           end
-        when "content"
-          reply["content"] = value
+        when 'content'
+          reply['content'] = value
         else
           reply["#{key}"] = value
         end
@@ -395,6 +381,6 @@ class Roust
       list << reply
     end
 
-    return list
+    list
   end
 end

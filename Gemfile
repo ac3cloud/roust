@@ -10,4 +10,5 @@ group :development do
   gem 'rake'
   gem 'webmock'
   gem 'pry'
+  gem 'rubocop', :require => false
 end
