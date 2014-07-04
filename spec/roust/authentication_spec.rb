@@ -6,8 +6,8 @@ describe Roust do
 
   describe 'authentication' do
     it 'authenticates on instantiation' do
-      rt = Roust.new(credentials)
-      rt.authenticated?.should be_true
+      @rt = Roust.new(credentials)
+      expect(@rt.authenticated?).to eq(true)
     end
   end
 end

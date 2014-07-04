@@ -17,28 +17,25 @@ describe Roust do
                  :body    => mocks_path.join('queue-nil.txt').read,
                  :headers => {})
 
+
+    @rt = Roust.new(credentials)
+    expect(@rt.authenticated?).to eq(true)
   end
 
   describe 'queue' do
     it "can lookup queue details" do
-      rt = Roust.new(credentials)
-      rt.authenticated?.should be_true
-
       attrs = %w(id name description correspondaddress commentaddress) +
               %w(initialpriority finalpriority defaultduein)
 
-      queue = rt.queue('13')
+      queue = @rt.queue('13')
       attrs.each do |attr|
-        queue[attr].should_not be_nil, "#{attr} key doesn't exist"
+        expect(queue[attr]).to_not eq(nil), "#{attr} key doesn't exist"
       end
     end
 
     it 'returns nil for unknown queues' do
-      rt = Roust.new(credentials)
-      rt.authenticated?.should be_true
-
-      queue = rt.queue('nil')
-      queue.should be_nil
+      queue = @rt.queue('nil')
+      expect(queue).to eq(nil)
     end
   end
 end

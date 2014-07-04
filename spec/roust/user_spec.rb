@@ -23,27 +23,23 @@ describe Roust do
                    :body   => mocks_path.join('user-dan@us.example-edit.txt').read,
                    :headers => {})
 
+    @rt = Roust.new(credentials)
+    expect(@rt.authenticated?).to eq(true)
   end
 
   describe 'user' do
     it 'can lookup user details' do
-      rt = Roust.new(credentials)
-      rt.authenticated?.should be_true
-
       attrs = %w(name realname gecos nickname emailaddress id lang password)
 
-      user = rt.user_show('dan@us.example')
+      user = @rt.user_show('dan@us.example')
       attrs.each do |attr|
-        user[attr].should_not be_nil, "#{attr} key doesn't exist"
+        expect(user[attr]).to_not eq(nil), "#{attr} key doesn't exist"
       end
     end
 
     it 'returns nil for unknown users' do
-      rt = Roust.new(credentials)
-      rt.authenticated?.should be_true
-
-      queue = rt.user_show('nil')
-      queue.should be_nil
+      queue = @rt.user_show('nil')
+      expect(queue).to eq(nil)
     end
 
     it 'can modify an existing user' do
@@ -53,13 +49,10 @@ describe Roust do
                    :body    => mocks_path.join('user-dan@us.example-after-edit.txt').read,
                    :headers => {})
 
-      rt = Roust.new(credentials)
-      rt.authenticated?.should be_true
-
       attrs = { 'RealName' => 'Daniel Smith' }
-      user  = rt.user_update('dan@us.example', attrs)
+      user  = @rt.user_update('dan@us.example', attrs)
 
-      user['realname'].should == 'Daniel Smith'
+      expect(user['realname']).to eq('Daniel Smith')
     end
   end
 end
