@@ -7,7 +7,7 @@
 
 require 'pathname'
 lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
-$: << lib
+$LOAD_PATH << lib
 require 'webmock/rspec'
 
 RSpec.configure do |config|
@@ -30,16 +30,16 @@ RSpec.shared_context 'credentials' do
   before(:each) do
     mocks_path = Pathname.new(__FILE__).parent.join('mocks')
 
-    stub_request(:post, 'http://rt.example.org/index.html').
-      with(:body => {
-            'user'=>'admin',
-            'pass'=>'password',
-           }).
-      to_return(:status => 200, :body => '', :headers => {})
+    stub_request(:post, 'http://rt.example.org/index.html')
+      .with(:body => {
+              'user' => 'admin',
+              'pass' => 'password'
+            })
+      .to_return(:status => 200, :body => '', :headers => {})
 
-    stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/1/show').
-      to_return(:status  => 200,
-                :body    => mocks_path.join('ticket-1-show.txt').read,
-                :headers => {})
+    stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/1/show')
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-1-show.txt').read,
+                 :headers => {})
   end
 end

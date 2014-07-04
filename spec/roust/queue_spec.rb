@@ -7,23 +7,22 @@ describe Roust do
   before do
     mocks_path = Pathname.new(__FILE__).parent.parent.join('mocks')
 
-    stub_request(:get, "http://rt.example.org/REST/1.0/queue/13").
-       to_return(:status => 200,
-                 :body    => mocks_path.join('queue-13.txt').read,
-                 :headers => {})
+    stub_request(:get, 'http://rt.example.org/REST/1.0/queue/13')
+       .to_return(:status => 200,
+                  :body    => mocks_path.join('queue-13.txt').read,
+                  :headers => {})
 
-    stub_request(:get, "http://rt.example.org/REST/1.0/queue/nil").
-       to_return(:status => 200,
-                 :body    => mocks_path.join('queue-nil.txt').read,
-                 :headers => {})
-
+    stub_request(:get, 'http://rt.example.org/REST/1.0/queue/nil')
+       .to_return(:status => 200,
+                  :body    => mocks_path.join('queue-nil.txt').read,
+                  :headers => {})
 
     @rt = Roust.new(credentials)
     expect(@rt.authenticated?).to eq(true)
   end
 
   describe 'queue' do
-    it "can lookup queue details" do
+    it 'can lookup queue details' do
       attrs = %w(id name description correspondaddress commentaddress) +
               %w(initialpriority finalpriority defaultduein)
 

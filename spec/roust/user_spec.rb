@@ -7,21 +7,21 @@ describe Roust do
   before do
     mocks_path = Pathname.new(__FILE__).parent.parent.join('mocks')
 
-    stub_request(:get, "http://rt.example.org/REST/1.0/user/dan@us.example").
-       to_return(:status  => 200,
-                 :body    => mocks_path.join('user-dan@us.example.txt').read,
-                 :headers => {})
+    stub_request(:get, 'http://rt.example.org/REST/1.0/user/dan@us.example')
+       .to_return(:status  => 200,
+                  :body    => mocks_path.join('user-dan@us.example.txt').read,
+                  :headers => {})
 
-    stub_request(:get, "http://rt.example.org/REST/1.0/user/nil").
-       to_return(:status  => 200,
-                 :body    => mocks_path.join('user-nil.txt').read,
-                 :headers => {})
+    stub_request(:get, 'http://rt.example.org/REST/1.0/user/nil')
+       .to_return(:status  => 200,
+                  :body    => mocks_path.join('user-nil.txt').read,
+                  :headers => {})
 
-    stub_request(:post, "http://rt.example.org/REST/1.0/user/dan@us.example/edit").
-         with(:body => "content=id%3A%20user%2Fdan%40us.example%0ARealName%3A%20Daniel%20Smith").
-         to_return(:status => 200,
-                   :body   => mocks_path.join('user-dan@us.example-edit.txt').read,
-                   :headers => {})
+    stub_request(:post, 'http://rt.example.org/REST/1.0/user/dan@us.example/edit')
+         .with(:body => 'content=id%3A%20user%2Fdan%40us.example%0ARealName%3A%20Daniel%20Smith')
+         .to_return(:status => 200,
+                    :body   => mocks_path.join('user-dan@us.example-edit.txt').read,
+                    :headers => {})
 
     @rt = Roust.new(credentials)
     expect(@rt.authenticated?).to eq(true)
@@ -44,12 +44,12 @@ describe Roust do
 
     it 'can modify an existing user' do
       mocks_path = Pathname.new(__FILE__).parent.parent.join('mocks')
-      stub_request(:get, "http://rt.example.org/REST/1.0/user/dan@us.example").
-         to_return(:status  => 200,
-                   :body    => mocks_path.join('user-dan@us.example-after-edit.txt').read,
-                   :headers => {})
+      stub_request(:get, 'http://rt.example.org/REST/1.0/user/dan@us.example')
+         .to_return(:status  => 200,
+                    :body    => mocks_path.join('user-dan@us.example-after-edit.txt').read,
+                    :headers => {})
 
-      attrs = { 'RealName' => 'Daniel Smith' }
+      attrs = {'RealName' => 'Daniel Smith'}
       user  = @rt.user_update('dan@us.example', attrs)
 
       expect(user['realname']).to eq('Daniel Smith')

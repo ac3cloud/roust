@@ -1,0 +1,11 @@
+# These are project syntax rules. We won't ever fix these. Unless we all get fired or something.
+
+HashSyntax:
+  Enabled: false
+
+LineLength:
+  Enabled: false
+
+# Configuration parameters: EnforcedStyleForEmptyBraces, SupportedStyles.
+Style/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
