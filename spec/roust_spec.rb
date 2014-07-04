@@ -167,8 +167,6 @@ describe "Roust" do
       rt = Roust.new(@credentials)
       rt.authenticated?.should be_true
 
-      attrs = %w(name realname gecos nickname emailaddress id lang password)
-
       attrs = { 'RealName' => 'Daniel Smith' }
       user  = rt.user_update('dan@us.example', attrs)
 
