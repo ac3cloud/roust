@@ -72,9 +72,6 @@ describe Roust do
         txn.last.should  match(/^\w.*\w$/)
       end
 
-      #attrs = %w(ticket data oldvalue creator timetaken) +
-      #        %w(id type field newvalue content description) +
-      #        %w(attachments created)
       attrs = %w(ticket data oldvalue timetaken) +
               %w(id type field newvalue content description)
 
