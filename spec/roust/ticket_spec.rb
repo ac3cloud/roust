@@ -1,26 +1,11 @@
 require 'spec_helper'
 require 'roust'
 
-describe "Roust" do
+describe Roust do
+  include_context 'credentials'
+
   before do
-    @credentials = {
-      :server   => 'http://rt.example.org',
-      :username => 'admin',
-      :password => 'password'
-    }
     mocks_path = Pathname.new(__FILE__).parent.parent.join('mocks')
-
-    stub_request(:post, "http://rt.example.org/index.html").
-      with(:body => {
-            "user"=>"admin",
-            "pass"=>"password",
-           }).
-      to_return(:status => 200, :body => "", :headers => {})
-
-    stub_request(:get, "http://rt.example.org/REST/1.0/ticket/1/show").
-      to_return(:status  => 200,
-                :body    => mocks_path.join('ticket-1-show.txt').read,
-                :headers => {})
 
     stub_request(:get, "http://rt.example.org/REST/1.0/search/ticket?format=s&orderby=%2Bid&query%5Bquery%5D=id%20=%201%20or%20id%20=%202").
        to_return(:status  => 200,
@@ -41,7 +26,7 @@ describe "Roust" do
 
   describe 'tickets' do
     it "can list tickets matching a query" do
-      rt = Roust.new(@credentials)
+      rt = Roust.new(credentials)
       rt.authenticated?.should be_true
 
       results = rt.search(:query => "id = 1 or id = 2")
@@ -52,7 +37,7 @@ describe "Roust" do
     end
 
     it "can fetch metadata on individual tickets" do
-      rt = Roust.new(@credentials)
+      rt = Roust.new(credentials)
       rt.authenticated?.should be_true
 
       ticket = rt.show("1")
@@ -75,7 +60,7 @@ describe "Roust" do
     end
 
     it "can fetch transactions on individual tickets" do
-      rt = Roust.new(@credentials)
+      rt = Roust.new(credentials)
       rt.authenticated?.should be_true
 
       short = rt.history("1", :format => "short")

@@ -1,26 +1,11 @@
 require 'spec_helper'
 require 'roust'
 
-describe "Roust" do
+describe Roust do
+  include_context 'credentials'
+
   before do
-    @credentials = {
-      :server   => 'http://rt.example.org',
-      :username => 'admin',
-      :password => 'password'
-    }
     mocks_path = Pathname.new(__FILE__).parent.parent.join('mocks')
-
-    stub_request(:post, "http://rt.example.org/index.html").
-      with(:body => {
-            "user"=>"admin",
-            "pass"=>"password",
-           }).
-      to_return(:status => 200, :body => "", :headers => {})
-
-    stub_request(:get, "http://rt.example.org/REST/1.0/ticket/1/show").
-      to_return(:status  => 200,
-                :body    => mocks_path.join('ticket-1-show.txt').read,
-                :headers => {})
 
     stub_request(:get, "http://rt.example.org/REST/1.0/user/dan@us.example").
        to_return(:status  => 200,
@@ -42,7 +27,7 @@ describe "Roust" do
 
   describe 'user' do
     it 'can lookup user details' do
-      rt = Roust.new(@credentials)
+      rt = Roust.new(credentials)
       rt.authenticated?.should be_true
 
       attrs = %w(name realname gecos nickname emailaddress id lang password)
@@ -54,7 +39,7 @@ describe "Roust" do
     end
 
     it 'returns nil for unknown users' do
-      rt = Roust.new(@credentials)
+      rt = Roust.new(credentials)
       rt.authenticated?.should be_true
 
       queue = rt.user_show('nil')
@@ -68,7 +53,7 @@ describe "Roust" do
                    :body    => mocks_path.join('user-dan@us.example-after-edit.txt').read,
                    :headers => {})
 
-      rt = Roust.new(@credentials)
+      rt = Roust.new(credentials)
       rt.authenticated?.should be_true
 
       attrs = { 'RealName' => 'Daniel Smith' }
