@@ -176,9 +176,8 @@ class Roust
     }
     response = self.class.get('/search/ticket', :query => params)
     # FIXME(auxesis) use explode_response here
-    body = response.body
-    body.gsub!(/RT\/\d+\.\d+\.\d+\s\d{3}\s.*\n\n/, '')
 
+    body, _ = explode_response(response)
     body.split("\n").map do |t|
       id, subject = t.split(': ', 2)
       {'id' => id, 'Subject' => subject}
@@ -342,7 +341,7 @@ class Roust
       # Yes, this messes with the "content:" field but that's the one that's upsetting Mail.new
       item.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
       history = Mail.new(item)
-      next unless comments && history['type'].to_s =~ /Comment/ # skip comments
+      next if not comments and history['type'].to_s =~ /Comment/ # skip comments
       reply = {}
 
       history.header.fields.each_with_index do |header, index|
