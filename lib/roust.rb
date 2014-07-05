@@ -3,6 +3,8 @@ require 'mail'
 require 'active_support/core_ext/hash'
 
 class Unauthenticated < Exception; end
+class BadRequest < Exception; end
+class UnhandledResponse < Exception; end
 
 class Roust
   include HTTParty
@@ -247,6 +249,40 @@ class Roust
   end
 
   alias_method :user, :user_show
+
+  def user_create(attrs)
+    default_attrs = {
+      'id' => 'user/new'
+    }
+
+    #attrs = default_attrs.merge(attrs).stringify_keys!
+    #attrs['Signature'].gsub!(/\n/, "\n ") if attrs['Text'] # insert a space on continuation lines.
+
+    attrs = attrs.stringify_keys!
+
+    content = compose_content('user', attrs['id'], attrs)
+
+    response = self.class.post(
+      '/user/new/edit',
+      :body => {
+        :content => content
+      }
+    )
+
+    body, _ = explode_response(response)
+
+    case body
+    when /^# Could not create user/
+      raise BadRequest, body
+    when /^# Syntax error/
+      raise SyntaxError, body
+    when /^# User (\d+) created/
+      id = body[/^# User (\d+) created/, 1]
+      show(id)
+    else
+      raise UnhandledResponse, body
+    end
+  end
 
   def user_update(id, attrs)
     content = compose_content('user', id, attrs)

@@ -23,6 +23,13 @@ describe Roust do
                     :body   => mocks_path.join('user-dan@us.example-edit.txt').read,
                     :headers => {})
 
+    stub_request(:post, "http://rt.example.org/REST/1.0/user/new")
+         .with(:body => "content=id%3A%20user%2Fnew%0AEmailAddress%3A%20erin%40us.example%0ARealName%3A%20Erin%20Jones")
+         .to_return(:status => 200,
+                    :body => "",
+                    :body   => mocks_path.join('user-dan@us.example-edit.txt').read,
+                    :headers => {})
+
     @rt = Roust.new(credentials)
     expect(@rt.authenticated?).to eq(true)
   end
@@ -53,6 +60,18 @@ describe Roust do
       user  = @rt.user_update('dan@us.example', attrs)
 
       expect(user['realname']).to eq('Daniel Smith')
+    end
+
+    it 'can create a new user' do
+      attrs = {
+        'EmailAddress' => 'erin@us.example',
+        'Name' => 'erin',
+        'RealName' => 'Erin Jones',
+        'Gecos' => 'erin',
+        'Lang' => 'en'
+      }
+      user = @rt.user_create(attrs)
+      expect(user['realname']).to eq('Erin Jones')
     end
   end
 end
