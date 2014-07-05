@@ -3,6 +3,11 @@ require 'mail'
 require 'active_support/core_ext/hash'
 
 class Unauthenticated < Exception; end
+class Unauthorized < Exception; end
+class BadRequest < Exception; end
+class UnhandledResponse < Exception; end
+class NotFound < Exception; end
+class InvalidRecord < Exception; end
 
 class Roust
   include HTTParty
@@ -48,7 +53,7 @@ class Roust
     body, _ = explode_response(response)
 
     if match = body.match(/^# (Ticket (\d+) does not exist\.)/)
-      return { 'error' => match[1] }
+      raise NotFound, match[1]
     end
 
     # Replace CF spaces with underscores
@@ -98,9 +103,8 @@ class Roust
     }
     attrs = default_attrs.merge(attrs).stringify_keys!
 
-    if error = create_invalid?(attrs)
-      return {'error' => error }
-    end
+    error = create_invalid?(attrs)
+    raise InvalidRecord, error if error
 
     attrs['Text'].gsub!(/\n/, "\n ") if attrs['Text'] # insert a space on continuation lines.
 
@@ -122,18 +126,20 @@ class Roust
     body, _ = explode_response(response)
 
     case body
-    when /^# Could not create ticket/
-      false
-    when /^# Syntax error/
-      false
     when /^# Ticket (\d+) created/
       id = body[/^# Ticket (\d+) created/, 1]
+      # Add the AdminCc after the ticket is created, because we can't set it
+      # on ticket creation.
       update(id, 'AdminCc' => admincc) if admincc
+
+      # Return the whole ticket, not just the id.
       show(id)
+    when /^# Could not create ticket/
+      raise BadRequest, body
+    when /^# Syntax error/
+      raise SyntaxError, body
     else
-      # We should never hit this, but if we do, just pass it through and
-      # surprise the user (!!!).
-      body
+      raise UnhandledResponse, body
     end
   end
 
@@ -150,17 +156,15 @@ class Roust
     body, _ = explode_response(response)
 
     case body
-    when /^# You are not allowed to modify ticket \d+/
-      { 'error' => body.strip }
-    when /^# Syntax error/
-      { 'error' => body.strip }
     when /^# Ticket (\d+) updated/
       id = body[/^# Ticket (\d+) updated/, 1]
       show(id)
+    when /^# You are not allowed to modify ticket \d+/
+      raise Unauthorized, body
+    when /^# Syntax error/
+      raise SyntaxError, body
     else
-      # We should never hit this, but if we do, just pass it through and
-      # surprise the user (!!!).
-      body
+      raise UnhandledResponse, body
     end
   end
 
@@ -213,9 +217,8 @@ class Roust
     response = self.class.get("/queue/#{id}")
 
     body, _ = explode_response(response)
-    case body
-    when /No queue named/
-      nil
+    if body =~ /No queue named/
+      raise NotFound, body
     else
       body.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
       message = Mail.new(body)
@@ -232,9 +235,8 @@ class Roust
     response = self.class.get("/user/#{id}")
 
     body, _ = explode_response(response)
-    case body
-    when /No user named/
-      nil
+    if body =~ /No user named/
+      raise NotFound, body
     else
       body.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
       message = Mail.new(body)
@@ -261,17 +263,15 @@ class Roust
     body, _ = explode_response(response)
 
     case body
-    when /^# You are not allowed to modify user \d+/
-      { 'error' => body.strip }
-    when /^# Syntax error/
-      { 'error' => body.strip }
     when /^# User (.+) updated/
       id = body[/^# User (.+) updated/, 1]
       user_show(id)
+    when /^# You are not allowed to modify user \d+/
+      raise Unauthorized, body
+    when /^# Syntax error/
+      raise SyntaxError, body
     else
-      # We should never hit this, but if we do, just pass it through and
-      # surprise the user (!!!).
-      body
+      raise UnhandledResponse
     end
   end
 
