@@ -42,5 +42,7 @@ module Roust::User
     end
   end
 
+  # TODO(auxesis): add method for creating a user
+
   alias_method :user, :user_show
 end

@@ -158,6 +158,13 @@ module Roust::Ticket
     end
   end
 
+  # TODO(auxesis): add method for getting ticket links
+  # TODO(auxesis): add method for updating ticket links
+  # TODO(auxesis): add method for listing ticket attachments
+  # TODO(auxesis): add method for getting a ticket attachment
+  # TODO(auxesis): add method for commenting on a ticket
+  # TODO(auxesis): add method for replying on a ticket
+
   # To maintain backwards compatibility with previous versions (and rt-client),
   # alias these methods to their short form.
   alias_method :create, :ticket_create
