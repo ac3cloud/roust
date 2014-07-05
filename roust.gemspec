@@ -5,7 +5,7 @@ require 'roust/version'
 Gem::Specification.new do |s|
   s.name    = 'roust'
   s.version = Roust::VERSION
-  s.date    = '2014-01-23'
+  s.date    = Time.now.strftime('%Y-%m-%d')
 
   s.authors = ['Lindsay Holmwood']
   s.email   = ['lindsay@holmwood.id.au']
