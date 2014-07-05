@@ -17,9 +17,8 @@ class Roust
     username = credentials[:username]
     password = credentials[:password]
 
-    if server =~ /REST/
-      puts "WARNING: The supplied :server has REST in the URL. You only need to specify"
-      puts "WARNING: the base, e.g. http://rt.example.org/"
+    if server =~ /REST\/1\.0/
+      raise ArgumentError, "The supplied :server has REST in the URL. You only need to specify the base, e.g. http://rt.example.org/"
     end
 
     self.class.base_uri(server)
