@@ -18,8 +18,14 @@ class Roust
     password = credentials[:password]
 
     if server =~ /REST\/1\.0/
-      raise ArgumentError, "The supplied :server has REST in the URL. You only need to specify the base, e.g. http://rt.example.org/"
+      raise ArgumentError, 'The supplied :server has REST in the URL. You only need to specify the base, e.g. http://rt.example.org/'
     end
+
+    # - There is no way to authenticate against the API. The only way to log
+    #   in is to fill out the same HTML form humans fill in, cache the cookies
+    #   returned, and send them on every subsequent request.
+    # - RT does not provide *any* indication that the authentication request
+    #   has succeeded or failed. RT will always return a HTTP 200.
 
     self.class.base_uri(server)
 
@@ -31,32 +37,35 @@ class Roust
       }
     )
 
-    if cookie = response.headers['set-cookie']
-      self.class.headers['Cookie'] = cookie
-    end
+    cookie = response.headers['set-cookie']
+    self.class.headers['Cookie'] = cookie if cookie
 
+    # Switch the base uri over to the actual REST API base uri.
     self.class.base_uri "#{server}/REST/1.0"
 
-    # - There is no way to authenticate against the API. The only way to log
-    #   in is to fill out the same HTML form humans fill in, cache the cookies
-    #   returned, and send them on every subsequent request.
-    # - RT does not provide *any* indication that the authentication request
-    #   has succeeded or failed. RT will always return a HTTP 200.
     # - The easiest way to programatically check if an authentication request
     #   succeeded is by doing a request for a ticket, and seeing if the API
     #   responds with some specific text ("401 Credentials required") that
     #   indicates authentication has previously failed.
-    # - The authenticated? method will raise an Unauthenticated exception if
-    #   it detects a response including this "401 Credentials required" string.
-    authenticated?
+    # - The authenticated? method will return false if an Unauthenticated
+    #   exception bubbles up from response handling. We (dirtily) rethrow the
+    #   exception.
+    raise Unauthenticated unless authenticated?
   end
 
   def authenticated?
-    return true if show('1')
+    begin
+      return true if show('1')
+    rescue Unauthenticated
+      return false
+    end
   end
 
   private
 
+  # compose_content turns a Hash into an RFC2822 "key: value"-like header blob
+  #
+  # This is the fucked up format RT demands all content is sent and received in.
   def compose_content(type, id, attrs)
     default_attrs = {
       'id' => [ type, id ].join('/')
@@ -84,6 +93,14 @@ class Roust
     content.join("\n")
   end
 
+  # explode_response separates RT's response content from the response status.
+  #
+  # All HTTP-level response codes from RT are a lie. The only way to check if
+  # the request was successful is by inspecting the body of the content back
+  # from RT, and separating the first line from the rest of the content.
+  #
+  # - The first line contains the status of the operation.
+  # - All subsequent lines (if there are any) are the message body.
   def explode_response(response)
     body   = response.body
     status = body[/RT\/\d+\.\d+\.\d+\s(\d{3}\s.*)\n/, 1]

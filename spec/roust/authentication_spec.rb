@@ -5,12 +5,12 @@ describe Roust do
   include_context 'credentials'
 
   describe 'authentication' do
-    it 'authenticates on instantiation' do
+    it 'indicates authenticated status' do
       @rt = Roust.new(credentials)
       expect(@rt.authenticated?).to eq(true)
     end
 
-    it 'errors when credentials are incorrect' do
+    it 'errors on invalid credentials' do
       mocks_path = Pathname.new(__FILE__).parent.parent.join('mocks')
 
       stub_request(:post, 'http://rt.example.org/index.html')
