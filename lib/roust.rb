@@ -13,27 +13,31 @@ class Roust
   include Roust::User
 
   def initialize(credentials)
-    server   = credentials[:server]
-    username = credentials[:username]
-    password = credentials[:password]
+    @server   = credentials[:server]
+    @username = credentials[:username]
+    @password = credentials[:password]
 
-    if server =~ /REST\/1\.0/
+    if @server =~ /REST\/1\.0/
       raise ArgumentError, 'The supplied :server has REST in the URL. You only need to specify the base, e.g. http://rt.example.org/'
     end
 
+    authenticate!
+  end
+
+  def authenticate!
     # - There is no way to authenticate against the API. The only way to log
     #   in is to fill out the same HTML form humans fill in, cache the cookies
     #   returned, and send them on every subsequent request.
     # - RT does not provide *any* indication that the authentication request
     #   has succeeded or failed. RT will always return a HTTP 200.
 
-    self.class.base_uri(server)
+    self.class.base_uri(@server)
 
     response = self.class.post(
       '/index.html',
       :body => {
-        :user => username,
-        :pass => password
+        :user => @username,
+        :pass => @password
       }
     )
 
@@ -41,7 +45,7 @@ class Roust
     self.class.headers['Cookie'] = cookie if cookie
 
     # Switch the base uri over to the actual REST API base uri.
-    self.class.base_uri "#{server}/REST/1.0"
+    self.class.base_uri "#{@server}/REST/1.0"
 
     # - The easiest way to programatically check if an authentication request
     #   succeeded is by doing a request for a ticket, and seeing if the API
@@ -54,11 +58,9 @@ class Roust
   end
 
   def authenticated?
-    begin
-      return true if show('1')
-    rescue Unauthenticated
-      return false
-    end
+    return true if show('1')
+  rescue Unauthenticated
+    return false
   end
 
   private
