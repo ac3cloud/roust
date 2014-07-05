@@ -158,6 +158,8 @@ module Roust::Ticket
     end
   end
 
+  # To maintain backwards compatibility with previous versions (and rt-client),
+  # alias these methods to their short form.
   alias_method :create, :ticket_create
   alias_method :show, :ticket_show
   alias_method :update, :ticket_update
