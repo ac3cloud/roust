@@ -6,7 +6,6 @@ class Unauthenticated < Exception; end
 class Unauthorized < Exception; end
 class BadRequest < Exception; end
 class UnhandledResponse < Exception; end
-class NotFound < Exception; end
 class InvalidRecord < Exception; end
 
 class Roust
@@ -52,9 +51,7 @@ class Roust
 
     body, _ = explode_response(response)
 
-    if match = body.match(/^# (Ticket (\d+) does not exist\.)/)
-      raise NotFound, match[1]
-    end
+    return nil if body =~ /^# (Ticket (\d+) does not exist\.)/
 
     # Replace CF spaces with underscores
     while body.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/)
@@ -218,7 +215,7 @@ class Roust
 
     body, _ = explode_response(response)
     if body =~ /No queue named/
-      raise NotFound, body
+      nil
     else
       body.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
       message = Mail.new(body)
@@ -236,7 +233,7 @@ class Roust
 
     body, _ = explode_response(response)
     if body =~ /No user named/
-      raise NotFound, body
+      nil
     else
       body.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
       message = Mail.new(body)
