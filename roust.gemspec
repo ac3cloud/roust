@@ -5,12 +5,12 @@ require 'roust/version'
 Gem::Specification.new do |s|
   s.name    = 'roust'
   s.version = Roust::VERSION
-  s.date    = '2014-01-23'
+  s.date    = Time.now.strftime('%Y-%m-%d')
 
   s.authors = ['Lindsay Holmwood']
   s.email   = ['lindsay@holmwood.id.au']
   s.summary      = "Ruby client for RT's REST API"
-  s.description  = 'Roust is a Ruby API client that accesses the REST interface version 1.0 of a Request Tracker instance. See http://www.bestpractical.com/ for Request Tracker.'
+  s.description  = "Roust is a Ruby API client to access Request Tracker's REST interface."
   s.homepage     = 'http://github.com/bulletproofnetworks/roust'
   s.license      = 'Apache 2.0'
 
