@@ -70,8 +70,8 @@ class Roust
       response = self.class.post(
         '/ticket/new',
         :body => {
-        :content => content
-      }
+          :content => content
+        }
       )
 
       body, _ = explode_response(response)
