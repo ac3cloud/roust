@@ -10,15 +10,19 @@ class Roust
       else
         body.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
         message = Mail.new(body)
-        Hash[message.header.fields.map { |header|
-          key   = header.name.to_s.downcase
+        pairs = message.header.fields.map do |header|
+          key   = header.name.to_s
           value = header.value.to_s
           [ key, value ]
-        }]
+        end
+        hash = Hash[pairs]
+        convert_response_boolean_attrs(hash)
       end
     end
 
     def user_update(id, attrs)
+      convert_request_boolean_attrs(attrs)
+
       content = compose_content('user', id, attrs)
 
       response = self.class.post(
@@ -76,5 +80,37 @@ class Roust
     end
 
     alias_method :user, :user_show
+
+    private
+
+    def convert_request_boolean_attrs(attrs)
+      %w(Disabled Privileged).each do |key|
+        if attrs.has_key?(key)
+          attrs[key] = case attrs[key]
+                       when true
+                         1
+                       when false
+                         0
+                       end
+        end
+      end
+
+      attrs
+    end
+
+    def convert_response_boolean_attrs(attrs)
+      %w(Disabled Privileged).each do |key|
+        if attrs.has_key?(key)
+          attrs[key] = case attrs[key]
+                       when '1'
+                         true
+                       when '0'
+                         false
+                       end
+        end
+      end
+
+      attrs
+    end
   end
 end
