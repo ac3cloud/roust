@@ -32,7 +32,7 @@ class Roust
 
       case body
       when /^# User (.+) updated/
-        id = body[/^# User (.+) updated/, 1]
+        id = $1
         user_show(id)
       when /^# You are not allowed to modify user \d+/
         raise Unauthorized, body
@@ -62,8 +62,8 @@ class Roust
       body, _ = explode_response(response)
 
       case body
-      when /^# User (\d+) created/
-        id = body[/^# User (\d+) created/, 1]
+      when /^# User (.+) created/
+        id = $1
         # Return the whole user, not just the id.
         user_show(id)
       when /^# Could not create user/

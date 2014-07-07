@@ -78,7 +78,7 @@ class Roust
 
       case body
       when /^# Ticket (\d+) created/
-        id = body[/^# Ticket (\d+) created/, 1]
+        id = $1
         # Add the AdminCc after the ticket is created, because we can't set it
         # on ticket creation.
         update(id, 'AdminCc' => admincc) if admincc
@@ -108,7 +108,7 @@ class Roust
 
         case body
         when /^# Ticket (\d+) updated/
-          id = body[/^# Ticket (\d+) updated/, 1]
+          id = $1
           show(id)
         when /^# You are not allowed to modify ticket \d+/
           raise Unauthorized, body
