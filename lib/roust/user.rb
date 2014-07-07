@@ -43,7 +43,37 @@ class Roust
       end
     end
 
-    # TODO(auxesis): add method for creating a user
+    # Requires RT > 3.8.0
+    def user_create(attrs)
+      default_attrs = {
+        'id' => 'user/new'
+      }
+      attrs = default_attrs.merge(attrs).stringify_keys!
+
+      content = compose_content('user', attrs['id'], attrs)
+
+      response = self.class.post(
+        '/user/new',
+        :body => {
+          :content => content
+        }
+      )
+
+      body, _ = explode_response(response)
+
+      case body
+      when /^# User (\d+) created/
+        id = body[/^# User (\d+) created/, 1]
+        # Return the whole user, not just the id.
+        user_show(id)
+      when /^# Could not create user/
+        raise BadRequest, body
+      when /^# Syntax error/
+        raise SyntaxError, body
+      else
+        raise UnhandledResponse, body
+      end
+    end
 
     alias_method :user, :user_show
   end
