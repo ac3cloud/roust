@@ -1,0 +1,22 @@
+RT/3.4.6 200 Ok
+
+id: user/7268365
+Name: erinj
+Password: ********
+EmailAddress: erin@us.example
+RealName: Erin Jones
+NickName: erin
+Gecos: erin
+MobilePhone: 0400123457
+PagerPhone: DESC
+
+Signature: Erin Jones
+           Engineering Manager
+           Example Org
+           tel: 1300 000 123
+           mob: 0400 123 457
+           fax: 02 9000 1234
+
+Lang: en
+Privileged: 0
+Disabled: 0
