@@ -31,13 +31,7 @@ class Roust
         end
       end
 
-      message = Mail.new(body)
-
-      hash = Hash[message.header.fields.map { |header|
-        key   = header.name.to_s
-        value = header.value.to_s
-        [ key, value ]
-      }]
+      hash = body_to_hash(body)
 
       %w(Requestors Cc AdminCc).each do |field|
         hash[field] = hash[field].split(', ') if hash[field]

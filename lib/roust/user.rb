@@ -8,14 +8,7 @@ class Roust
       if body =~ /No user named/
         nil
       else
-        body.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
-        message = Mail.new(body)
-        pairs = message.header.fields.map do |header|
-          key   = header.name.to_s
-          value = header.value.to_s
-          [ key, value ]
-        end
-        hash = Hash[pairs]
+        hash = body_to_hash(body)
         convert_response_boolean_attrs(hash)
       end
     end

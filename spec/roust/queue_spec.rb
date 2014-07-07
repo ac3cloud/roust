@@ -23,8 +23,8 @@ describe Roust do
 
   describe 'queue' do
     it 'can lookup queue details' do
-      attrs = %w(id name description correspondaddress commentaddress) +
-              %w(initialpriority finalpriority defaultduein)
+      attrs = %w(id Name Description CorrespondAddress CommentAddress) +
+              %w(InitialPriority FinalPriority DefaultDueIn)
 
       queue = @rt.queue('13')
       attrs.each do |attr|
