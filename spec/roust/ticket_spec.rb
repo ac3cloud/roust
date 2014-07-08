@@ -22,6 +22,11 @@ describe Roust do
                   :body    => mocks_path.join('ticket-1-history-long.txt').read,
                   :headers => {})
 
+    stub_request(:get, "http://rt.example.org/REST/1.0/ticket/3/links")
+       .to_return(:status  => 200,
+                  :body    => mocks_path.join('ticket-3-links.txt').read,
+                  :headers => {})
+
     @rt = Roust.new(credentials)
     expect(@rt.authenticated?).to eq(true)
   end
@@ -74,6 +79,17 @@ describe Roust do
         attrs.each do |attr|
           expect(txn[attr]).to_not eq(nil), "#{attr} key doesn't exist"
         end
+      end
+    end
+
+    it 'can list linked tickets on individual tickets' do
+      links = @rt.ticket_links('3')
+
+      expect(links['id']).to eq('3')
+
+      %w(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy).each do |key|
+        expect(links).to include(key)
+        expect(links[key]).to_not be_empty
       end
     end
   end

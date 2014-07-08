@@ -1,0 +1,19 @@
+RT/3.4.6 200 Ok
+
+id: ticket/3/links
+
+Members: fsck.com-rt://rt.example.org/ticket/100,
+         fsck.com-rt://rt.example.org/ticket/101,
+         fsck.com-rt://rt.example.org/ticket/102
+
+MemberOf: fsck.com-rt://rt.example.org/ticket/99
+
+RefersTo: fsck.com-rt://rt.example.org/ticket/150
+
+ReferredToBy: fsck.com-rt://rt.example.org/ticket/151
+
+DependsOn: fsck.com-rt://rt.example.org/ticket/50,
+           fsck.com-rt://rt.example.org/ticket/51,
+           fsck.com-rt://rt.example.org/ticket/52
+
+DependedOnBy: fsck.com-rt://rt.example.org/ticket/49

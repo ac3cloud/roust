@@ -120,8 +120,6 @@ class Roust
         :orderby => '+id'
       }
       response = self.class.get('/search/ticket', :query => params)
-      # FIXME(auxesis) use explode_response here
-
       body, _ = explode_response(response)
       body.split("\n").map do |t|
         id, subject = t.split(': ', 2)
@@ -153,7 +151,20 @@ class Roust
       end
     end
 
-    # TODO(auxesis): add method for getting ticket links
+    def ticket_links(id)
+      response = self.class.get("/ticket/#{id}/links")
+      body, _ = explode_response(response)
+
+      hash = body_to_hash(body)
+      id = hash.delete('id').split('/')[1]
+      cleaned_hash = hash.map do |k, v|
+        ids = v.split(/\s*,\s*/).map {|url| url.split('/').last }
+        [ k, ids ]
+      end
+
+      Hash[cleaned_hash].merge('id' => id)
+    end
+
     # TODO(auxesis): add method for updating ticket links
     # TODO(auxesis): add method for listing ticket attachments
     # TODO(auxesis): add method for getting a ticket attachment
