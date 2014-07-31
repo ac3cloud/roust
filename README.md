@@ -101,6 +101,5 @@ TODO
 ----
 
 - Links CRUD (linking tickets to one another)
-- User CRUD (creating + updating + deleting users)
 - Ticket comment + correspondence
 - Attachment fetching
