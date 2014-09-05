@@ -54,6 +54,13 @@ rt.show("1") # => { {"cc"=>["dan@us.example", "dave@them.example"], "owner"=>"bo
 rt.history("1", :format => "short") # => [["1", "Ticket created by alice"], ["2", "Status changed from 'open' to 'resolved' by bob"]]
 rt.history("1", :format => "long") # => [{"id"=>"1", "ticket"=>"1", "timetaken"=>"0", "type"=>"Create", "field"=>"", "oldvalue"=>"", "newvalue"=>"", "data"=>"", "description"=>"Ticket created by alice" }, … ]
 
+# Create ticket
+attrs = {
+  'Subject' => 'a test ticket',
+  'Queue' => 'sales'
+}
+rt.create(attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales', … }
+
 # Fetch user details
 rt.user("dan@us.example") # => {"id"=>"user/160000", "name"=>"dan", "password"=>"********", "emailaddress"=>"dan@us.example", "realname"=>"Dan Smith", "nickname"=>"dan", … }
 
