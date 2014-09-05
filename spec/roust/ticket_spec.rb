@@ -12,6 +12,11 @@ describe Roust do
                   :body    => mocks_path.join('ticket-search-1-or-2.txt').read,
                   :headers => {})
 
+    stub_request(:get, "http://rt.example.org/REST/1.0/search/ticket?format=l&orderby=%2Bid&query=id%20=%201%20or%20id%20=%202")
+       .to_return(:status  => 200,
+                  :body    => mocks_path.join('ticket-search-1-or-2-long.txt').read,
+                  :headers => {})
+
     stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/1/history?format=s')
        .to_return(:status  => 200,
                   :body    => mocks_path.join('ticket-1-history-short.txt').read,
@@ -37,6 +42,24 @@ describe Roust do
       expect(results.size).to eq(2)
       results.each do |result|
         expect(result.size).to eq(2)
+      end
+    end
+
+    it 'can verbosely list tickets matching a query' do
+      results = @rt.search(:query => 'id = 1 or id = 2', :verbose => true)
+      expect(results.size).to eq(2)
+
+      attrs = %w(id Subject Queue) +
+              %w(Requestors Cc AdminCc Owner Creator) +
+              %w(Resolved Status) +
+              %w(Starts Started TimeLeft Due TimeWorked TimeEstimated) +
+              %w(LastUpdated Created Told) +
+              %w(Priority FinalPriority InitialPriority)
+
+      results.each do |result|
+        attrs.each do |attr|
+          expect(result[attr]).to_not eq(nil), "#{attr} key doesn't exist"
+        end
       end
     end
 

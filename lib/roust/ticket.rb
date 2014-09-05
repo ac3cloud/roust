@@ -7,39 +7,7 @@ class Roust
 
       return nil if body =~ /^# (Ticket (\d+) does not exist\.)/
 
-        # Replace CF spaces with underscores
-        while body.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/)
-          body.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
-        end
-
-      # Sometimes the API returns requestors formatted like this:
-      #
-      #   Requestors: foo@example.org,
-      #               bar@example.org, baz@example.org
-      #               qux@example.org, quux@example.org,
-      #               corge@example.org
-      #
-      # Turn it into this:
-      #
-      #   Requestors: foo@example.org, bar@example.org, baz@example.org, ...
-      #
-      body.gsub!(/\n\n/, "\n")
-
-      %w(Requestors Cc AdminCc).each do |field|
-        body.gsub!(/^#{field}:(.+)^\n/m) do |m|
-          m.strip.split(/,\s+/).join(', ').strip
-        end
-      end
-
-      hash = body_to_hash(body)
-
-      %w(Requestors Cc AdminCc).each do |field|
-        hash[field] = hash[field].split(', ') if hash[field]
-      end
-
-      hash['id'] = hash['id'].split('/').last
-
-      hash
+      parse_ticket_attributes(body)
     end
 
     def ticket_create(attrs)
@@ -119,15 +87,25 @@ class Roust
         :orderby => '+id'
       }.merge(attrs)
 
+      params[:format] = 'l' if verbose = params.delete(:verbose)
+
       # FIXME(auxesis): query should be an actual method argument
       raise ArgumentError, ":query not specified" unless params[:query]
 
       response = self.class.get('/search/ticket', :query => params)
 
       body, _ = explode_response(response)
-      body.split("\n").map do |t|
-        id, subject = t.split(': ', 2)
-        {'id' => id, 'Subject' => subject}
+
+      if verbose
+        results = body.split("\n--\n\n")
+        results.map do |result_body|
+          parse_ticket_attributes(result_body)
+        end
+      else
+        body.split("\n").map do |t|
+          id, subject = t.split(': ', 2)
+          {'id' => id, 'Subject' => subject}
+        end
       end
     end
 
@@ -193,6 +171,42 @@ class Roust
       else
         "Needs attributes: #{missing.join(', ')}"
       end
+    end
+
+    def parse_ticket_attributes(body)
+      # Replace CF spaces with underscores
+      while body.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/)
+        body.gsub!(/CF\.\{([\w_ ]*)([ ]+)([\w ]*)\}/, 'CF.{\1_\3}')
+      end
+
+      # Sometimes the API returns requestors formatted like this:
+      #
+      #   Requestors: foo@example.org,
+      #               bar@example.org, baz@example.org
+      #               qux@example.org, quux@example.org,
+      #               corge@example.org
+      #
+      # Turn it into this:
+      #
+      #   Requestors: foo@example.org, bar@example.org, baz@example.org, ...
+      #
+      body.gsub!(/\n\n/, "\n")
+
+      %w(Requestors Cc AdminCc).each do |field|
+        body.gsub!(/^#{field}:(.+)^\n/m) do |m|
+          m.strip.split(/,\s+/).join(', ').strip
+        end
+      end
+
+      hash = body_to_hash(body)
+
+      %w(Requestors Cc AdminCc).each do |field|
+        hash[field] = hash[field].split(', ') if hash[field]
+      end
+
+      hash['id'] = hash['id'].split('/').last
+
+      hash
     end
 
     def parse_short_history(body, opts = {})

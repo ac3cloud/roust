@@ -1,0 +1,57 @@
+RT/3.4.6 200 Ok
+
+id: ticket/1
+Queue: support
+Owner: bob
+Creator: alice
+Subject: Heavy packet loss
+Status: open
+Priority: 101
+InitialPriority: 101
+FinalPriority: 100
+
+Requestors: carol@them.example, chuck@them.example,
+            craig@them.example
+
+Cc: dan@us.example, dave@them.example
+
+AdminCc: erin@us.example, eve@us.example,
+         frank@us.example, oscar@us.example,
+         peggy@us.example, trent@us.example
+
+Created: Tue Dec 11 07:59:31 2012
+Starts: Not set
+Started: Not set
+Due: Wed Dec 12 20:58:48 2012
+Resolved: Wed Jan 16 16:33:15 2013
+Told: Mon Jan 07 15:27:09 2013
+LastUpdated: Wed Nov 06 09:33:43 2013
+TimeEstimated: 0
+TimeWorked: 12 hours
+TimeLeft: 0
+
+--
+
+id: ticket/2
+Queue: sales
+Owner: bob
+Creator: RT_System
+Subject: Bloom
+Status: resolved
+Priority: 20
+InitialPriority: 20
+FinalPriority: 1
+Requestors: carol@them.example, chuck@them.example,
+Cc:
+AdminCc:
+Created: Tue May 29 16:19:22 2001
+Starts: Not set
+Started: Not set
+Due: Not set
+Resolved: Mon Mar 15 11:54:58 2004
+Told: Not set
+LastUpdated: Mon Oct 14 11:41:10 2013
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+
