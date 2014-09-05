@@ -113,13 +113,17 @@ class Roust
         end
     end
 
-    def ticket_search(query)
+    def ticket_search(attrs)
       params = {
-        :query   => query,
         :format  => 's',
         :orderby => '+id'
-      }
+      }.merge(attrs)
+
+      # FIXME(auxesis): query should be an actual method argument
+      raise ArgumentError, ":query not specified" unless params[:query]
+
       response = self.class.get('/search/ticket', :query => params)
+
       body, _ = explode_response(response)
       body.split("\n").map do |t|
         id, subject = t.split(': ', 2)

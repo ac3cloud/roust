@@ -7,7 +7,7 @@ describe Roust do
   before do
     mocks_path = Pathname.new(__FILE__).parent.parent.join('mocks')
 
-    stub_request(:get, 'http://rt.example.org/REST/1.0/search/ticket?format=s&orderby=%2Bid&query%5Bquery%5D=id%20=%201%20or%20id%20=%202')
+    stub_request(:get, "http://rt.example.org/REST/1.0/search/ticket?format=s&orderby=%2Bid&query=id%20=%201%20or%20id%20=%202")
        .to_return(:status  => 200,
                   :body    => mocks_path.join('ticket-search-1-or-2.txt').read,
                   :headers => {})
