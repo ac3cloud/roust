@@ -32,6 +32,17 @@ describe Roust do
                   :body    => mocks_path.join('ticket-3-links.txt').read,
                   :headers => {})
 
+    stub_request(:post, "http://rt.example.org/REST/1.0/ticket/new")
+       .with(:body => "content=id%3A%20ticket%2Fnew%0ASubject%3A%20test%20ticket%0AQueue%3A%20sales")
+       .to_return(:status => 200,
+                  :body    => mocks_path.join('ticket-create.txt').read,
+                  :headers => {})
+
+    stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/99/show')
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-99-show.txt').read,
+                 :headers => {})
+
     @rt = Roust.new(credentials)
     expect(@rt.authenticated?).to eq(true)
   end
@@ -113,6 +124,18 @@ describe Roust do
       %w(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy).each do |key|
         expect(links).to include(key)
         expect(links[key]).to_not be_empty
+      end
+    end
+
+    it 'can create tickets' do
+      attrs = {
+        'Subject' => 'test ticket',
+        'Queue'   => 'sales',
+      }
+      ticket = @rt.ticket_create(attrs)
+
+      attrs.each do |k, v|
+        expect(ticket[k]).to eq(v)
       end
     end
   end

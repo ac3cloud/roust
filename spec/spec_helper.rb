@@ -35,7 +35,9 @@ RSpec.shared_context 'credentials' do
               'user' => 'admin',
               'pass' => 'password'
             })
-      .to_return(:status => 200, :body => '', :headers => {})
+      .to_return(:status => 200,
+                 :body    => mocks_path.join('ticket-create.txt').read,
+                 :headers => {})
 
     stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/1/show')
       .to_return(:status  => 200,
