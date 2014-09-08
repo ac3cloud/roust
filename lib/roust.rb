@@ -87,12 +87,26 @@ class Roust
             k
           end
 
+      k = sanitize_content_key(k)
       v = v.join(', ') if v.respond_to?(:join)
 
       "#{k}: #{v}"
     end
 
     content.join("\n")
+  end
+
+  def sanitize_content_key(k)
+    case k.downcase
+    when 'requestors'
+      'Requestors'
+    when 'cc'
+      'Cc'
+    when 'admincc'
+      'AdminCc'
+    else
+      k
+    end
   end
 
   # explode_response separates RT's response content from the response status.

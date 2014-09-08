@@ -1,0 +1,19 @@
+RT/3.4.6 200 Ok
+
+id: ticket/100
+Queue: sales
+Subject: test ticket
+Status: new
+Priority: 101
+InitialPriority: 101
+FinalPriority: 100
+Created: Tue Dec 11 07:59:31 2012
+Starts: Not set
+Started: Not set
+Due: Wed Dec 12 20:58:48 2012
+Resolved: Wed Jan 16 16:33:15 2013
+Told: Mon Jan 07 15:27:09 2013
+LastUpdated: Wed Nov 06 09:33:43 2013
+TimeEstimated: 0
+TimeWorked: 12 hours
+TimeLeft: 0

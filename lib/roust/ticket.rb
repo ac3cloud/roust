@@ -25,7 +25,8 @@ class Roust
       #
       # Delete it from the ticket we are creating, and we'll update the ticket
       # after we've created.
-      admincc = attrs.delete('AdminCc')
+      key, admincc = attrs.detect {|k,v| k =~ /admincc/i }
+      attrs.delete(key)
 
       content = compose_content('ticket', attrs['id'], attrs)
 

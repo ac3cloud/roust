@@ -50,6 +50,21 @@ describe Roust do
                  :body    => mocks_path.join('ticket-99-show.txt').read,
                  :headers => {})
 
+    stub_request(:post, "http://rt.example.org/REST/1.0/ticket/100/edit")
+      .with { |request|
+        query = WebMock::Util::QueryMapper.query_to_values(request.body)
+        require 'pry'
+
+        true
+      }.to_return(:status => 200,
+                  :body    => mocks_path.join('ticket-100-update.txt').read,
+                  :headers => {})
+
+    stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/100/show')
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-100-show.txt').read,
+                 :headers => {})
+
     @rt = Roust.new(credentials)
     expect(@rt.authenticated?).to eq(true)
   end
@@ -152,6 +167,23 @@ describe Roust do
       attrs.each do |k, v|
         expect(ticket[k]).to eq(v)
       end
+    end
+
+    it 'transforms attribute case when creating or updating tickets' do
+      attrs = {
+        'requestors' => 'alice@them.example,bob@them.example',
+        'cc'         => 'charlie@them.example',
+        'admincc'    => 'daisy@us.example,eleanor@us.example',
+      }
+      ticket = @rt.ticket_update(100, attrs)
+
+      expect(WebMock).to have_requested(:post, "rt.example.org/REST/1.0/ticket/100/edit")
+        .with { |request|
+          query = WebMock::Util::QueryMapper.query_to_values(request.body)
+          query['content'] =~ /Requestors:/ &&
+          query['content'] =~ /Cc:/ &&
+          query['content'] =~ /AdminCc:/
+        }
     end
   end
 end
