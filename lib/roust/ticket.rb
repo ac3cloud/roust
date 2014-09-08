@@ -43,10 +43,10 @@ class Roust
         id = $1
         # Add the AdminCc after the ticket is created, because we can't set it
         # on ticket creation.
-        update(id, 'AdminCc' => admincc) if admincc
+        ticket_update(id, 'AdminCc' => admincc) if admincc
 
         # Return the whole ticket, not just the id.
-        show(id)
+        ticket_show(id)
       when /^# Could not create ticket/
         raise BadRequest, body
       when /^# Syntax error/
@@ -71,7 +71,7 @@ class Roust
         case body
         when /^# Ticket (\d+) updated/
           id = $1
-          show(id)
+          ticket_show(id)
         when /^# You are not allowed to modify ticket \d+/
           raise Unauthorized, body
         when /^# Syntax error/
