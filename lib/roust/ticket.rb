@@ -175,6 +175,9 @@ class Roust
       end
     end
 
+    # parse_ticket_attributes decodes a response body of ticket metadata.
+    #
+    # Used by ticket_show and verbose ticket_search.
     def parse_ticket_attributes(body)
       # Replace CF spaces with underscores
       while body.match(/CF\.\{[\w_ ]*[ ]+[\w ]*\}/)
