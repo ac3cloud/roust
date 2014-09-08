@@ -96,6 +96,8 @@ class Roust
 
       body, _ = explode_response(response)
 
+      return [] if body =~ /^No matching results\./
+
       if verbose
         results = body.split("\n--\n\n")
         results.map do |result_body|
