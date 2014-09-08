@@ -17,6 +17,13 @@ describe Roust do
                   :body    => mocks_path.join('ticket-search-1-or-2-long.txt').read,
                   :headers => {})
 
+    %w(s l).each do |format|
+      stub_request(:get, "http://rt.example.org/REST/1.0/search/ticket?format=#{format}&orderby=%2Bid&query=subject%20=%20%22a%20ticket%20that%20does%20not%20exist%22")
+         .to_return(:status => 200,
+                    :body    => mocks_path.join('ticket-search-that-does-not-exist.txt').read,
+                    :headers => {})
+    end
+
     stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/1/history?format=s')
        .to_return(:status  => 200,
                   :body    => mocks_path.join('ticket-1-history-short.txt').read,
@@ -54,6 +61,14 @@ describe Roust do
       results.each do |result|
         expect(result.size).to eq(2)
       end
+    end
+
+    it 'can list no tickets when there are no search results' do
+      results = @rt.search(:query => 'subject = "a ticket that does not exist"')
+      expect(results.size).to eq(0)
+
+      results = @rt.search(:query => 'subject = "a ticket that does not exist"', :verbose => true)
+      expect(results.size).to eq(0)
     end
 
     it 'can verbosely list tickets matching a query' do
