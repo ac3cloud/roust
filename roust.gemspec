@@ -23,5 +23,5 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'mail',                '>= 2.5.4'
   s.add_runtime_dependency 'httparty',            '>= 0.13.1'
-  s.add_runtime_dependency 'activesupport',       '>= 4.1.0'
+  s.add_runtime_dependency 'activesupport',       '>= 4.0.10'
 end
