@@ -55,11 +55,28 @@ rt.history("1", :format => "short") # => [["1", "Ticket created by alice"], ["2"
 rt.history("1", :format => "long") # => [{"id"=>"1", "ticket"=>"1", "timetaken"=>"0", "type"=>"Create", "field"=>"", "oldvalue"=>"", "newvalue"=>"", "data"=>"", "description"=>"Ticket created by alice" }, … ]
 
 # Create ticket
+body = """This is a multiline
+text body"""
+
 attrs = {
-  'Subject' => 'a test ticket',
-  'Queue' => 'sales'
+  'Subject'    => 'A test ticket',
+  'Queue'      => 'sales',
+  'Owner'      => 'Nobody',
+  "Requestors" => "a@test.com, b@test.com",
+  'Cc'         => "c@test.com, d@test.com",
+  "AdminCc"    => "e@test.com, f@test.com",
+  'Text' => body
 }
-rt.create(attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales', … }
+rt.ticket_create(attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales', … }
+
+# Update ticket
+attrs = {
+  'Subject' => 'A new subject'
+  'Owner'   => 'alice'
+}
+
+rt.ticket_update(ticket_id, attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales', … }
+
 
 # Fetch user details
 rt.user("dan@us.example") # => {"id"=>"user/160000", "name"=>"dan", "password"=>"********", "emailaddress"=>"dan@us.example", "realname"=>"Dan Smith", "nickname"=>"dan", … }
