@@ -168,10 +168,7 @@ describe Roust do
     end
 
     it 'can update links on individual tickets' do
-      attrs = {
-        'RefersTo' => 'http://www.google.com'
-      }
-      links = @rt.update_links('99', attrs)
+      links = @rt.update_links('99', {'RefersTo' => 'http://www.google.com'})
 
       expect(links['id']).to eq('99')
     end

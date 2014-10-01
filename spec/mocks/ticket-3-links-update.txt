@@ -1,3 +1,0 @@
-RT/3.4.6 200 Ok
-
-# Links for ticket 3 updated.
