@@ -62,10 +62,10 @@ attrs = {
   'Subject'    => 'A test ticket',
   'Queue'      => 'sales',
   'Owner'      => 'Nobody',
-  "Requestors" => "a@test.com, b@test.com",
-  'Cc'         => "c@test.com, d@test.com",
-  "AdminCc"    => "e@test.com, f@test.com",
-  'Text' => body
+  'Requestors' => 'a@test.com, b@test.com',
+  'Cc'         => 'c@test.com, d@test.com',
+  'AdminCc'    => 'e@test.com, f@test.com',
+  'Text'       => body
 }
 rt.ticket_create(attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales', … }
 
