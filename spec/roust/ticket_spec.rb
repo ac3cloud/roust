@@ -39,6 +39,19 @@ describe Roust do
                   :body    => mocks_path.join('ticket-3-links.txt').read,
                   :headers => {})
 
+    stub_request(:post, "http://rt.example.org/REST/1.0/ticket/99/links")
+      .with { |request|
+        query = WebMock::Util::QueryMapper.query_to_values(request.body)
+        true
+      }.to_return(:status => 200,
+                  :body    => mocks_path.join('ticket-99-links-update.txt').read,
+                  :headers => {})
+
+    stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/99/show')
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-99-show.txt').read,
+                 :headers => {})
+
     stub_request(:post, "http://rt.example.org/REST/1.0/ticket/new")
        .with(:body => "content=id%3A%20ticket%2Fnew%0ASubject%3A%20test%20ticket%0AQueue%3A%20sales")
        .to_return(:status => 200,
@@ -53,9 +66,6 @@ describe Roust do
     stub_request(:post, "http://rt.example.org/REST/1.0/ticket/100/edit")
       .with { |request|
         query = WebMock::Util::QueryMapper.query_to_values(request.body)
-        require 'pry'
-
-        true
       }.to_return(:status => 200,
                   :body    => mocks_path.join('ticket-100-update.txt').read,
                   :headers => {})
@@ -155,6 +165,15 @@ describe Roust do
         expect(links).to include(key)
         expect(links[key]).to_not be_empty
       end
+    end
+
+    it 'can update links on individual tickets' do
+      attrs = {
+        'RefersTo' => 'http://www.google.com'
+      }
+      links = @rt.update_links('99', attrs)
+
+      expect(links['id']).to eq('99')
     end
 
     it 'can create tickets' do
