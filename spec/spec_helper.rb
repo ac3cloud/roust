@@ -9,6 +9,7 @@ require 'pathname'
 lib = Pathname.new(__FILE__).parent.parent.join('lib').to_s
 $LOAD_PATH << lib
 require 'webmock/rspec'
+require 'pry'
 
 RSpec.configure do |config|
   # Use color not only in STDOUT but also in pagers and files
