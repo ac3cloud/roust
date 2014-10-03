@@ -150,7 +150,29 @@ class Roust
       Hash[cleaned_hash].merge('id' => id)
     end
 
-    # TODO(auxesis): add method for updating ticket links
+    def ticket_links_update(id, attrs)
+      content = compose_content('ticket', attrs['id'], attrs)
+
+      response = self.class.post(
+        "/ticket/#{id}/links",
+        :body => {
+          :content => content
+        }
+      )
+
+      body, _ = explode_response(response)
+
+      case body
+      when /^# Links for ticket (\d+) updated/
+        id = $1
+        ticket_show(id)
+      when /^# Syntax error/
+        raise SyntaxError, body
+      else
+        raise UnhandledResponse, body
+      end
+    end
+
     # TODO(auxesis): add method for listing ticket attachments
     # TODO(auxesis): add method for getting a ticket attachment
     # TODO(auxesis): add method for commenting on a ticket
@@ -163,6 +185,10 @@ class Roust
     alias_method :update, :ticket_update
     alias_method :history, :ticket_history
     alias_method :search, :ticket_search
+
+    # To provide more UX-friendly method calls whilst still keeping
+    # the old naming format
+    alias_method :update_links, :ticket_links_update
 
     private
 
