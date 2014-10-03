@@ -136,21 +136,148 @@ class Roust
       end
     end
 
-    def ticket_links(id)
+    def ticket_links_show(id)
       response = self.class.get("/ticket/#{id}/links")
       body, _ = explode_response(response)
 
       hash = body_to_hash(body)
       id = hash.delete('id').split('/')[1]
       cleaned_hash = hash.map do |k, v|
-        ids = v.split(/\s*,\s*/).map {|url| url.split('/').last }
+        ids = v.split(/\s*,\s*/).map do |url|
+          url =~ /^fsck\.com\-/ ? url.split('/').last : url
+        end
         [ k, ids ]
       end
 
       Hash[cleaned_hash].merge('id' => id)
     end
 
-    # TODO(auxesis): add method for updating ticket links
+    # Add links on a ticket.
+    #
+    # @param id [Fixnum] the id of the ticket to add links on.
+    # @param attrs [Hash] the links to add.
+    # @return [Hash] all the links on the ticket after the add action.
+    #
+    # Example attrs:
+    #
+    #   {
+    #     "RefersTo" => [
+    #       "http://us.example",
+    #       "http://them.example",
+    #     ]
+    #   }
+    #
+    def ticket_links_add(id, attrs)
+      # Get the current links state
+      current_links = ticket_links_show(id)
+      current_links.delete('id')
+      desired_links = Marshal.load(Marshal.dump(current_links))
+
+      # Build up the desired link state
+      attrs.each do |k,v|
+        desired_links[k] ||= []
+        v.each do |link|
+          desired_links[k] << link
+        end
+        desired_links[k].uniq!
+      end
+
+      # Remove all links before we add any new ones. Fucking RT API.
+      ticket_links_remove(id, current_links)
+
+      # Work out how many times we'll need to make the same request until we
+      # get the desired state.
+      tries = desired_links.max_by {|k,v| v.size }.last.size
+
+      tries.times do
+        content = compose_content('ticket', id, desired_links)
+
+        response = self.class.post(
+          "/ticket/#{id}/links",
+          :body => {
+            :content => content
+          }
+        )
+
+        body, _ = explode_response(response)
+
+        case body
+        when /^# Links for ticket (\d+) updated/
+          id = $1
+          #ticket_links_show(id)
+        when /^# You are not allowed to modify ticket \d+/
+          raise Unauthorized, body
+        when /^# Syntax error/
+          raise SyntaxError, body
+        else
+          raise UnhandledResponse, body
+        end
+      end
+
+      ticket_links_show(id)
+    end
+
+    # Remove links on a ticket.
+    #
+    # @param id [Fixnum] the id of the ticket to remove links on.
+    # @param attrs [Hash] the links to remove.
+    # @return [Hash] all the links on the ticket after the remove action.
+    #
+    # Example attrs:
+    #
+    #   {
+    #     "DependsOn" => [
+    #       "http://us.example",
+    #       "http://them.example",
+    #     ],
+    #     "RefersTo" => [
+    #       "http://others.example",
+    #     ],
+    #   }
+    #
+    def ticket_links_remove(id, attrs)
+      # Get the current links state
+      current_links = ticket_links_show(id)
+      desired_links = Marshal.load(Marshal.dump(current_links))
+
+      # Build up the desired link state
+      attrs.each do |k,v|
+        v.each do |link|
+          desired_links[k].delete(link) if desired_links[k]
+        end
+      end
+
+      # Work out how many times we'll need to make the same request until we
+      # get the desired state.
+      tries = attrs.empty? ? 0 : attrs.max_by {|k,v| v.size }.last.size
+
+      tries.times do
+        content = compose_content('ticket', id, desired_links)
+
+        response = self.class.post(
+          "/ticket/#{id}/links",
+          :body => {
+            :content => content
+          }
+        )
+
+        body, _ = explode_response(response)
+
+        case body
+        when /^# Links for ticket (\d+) updated/
+          id = $1
+        when /^# You are not allowed to modify ticket \d+/
+          raise Unauthorized, body
+        when /^# Syntax error/
+          raise SyntaxError, body
+        else
+          raise UnhandledResponse, body
+        end
+      end
+
+      ticket_links_show(id)
+    end
+
     # TODO(auxesis): add method for listing ticket attachments
     # TODO(auxesis): add method for getting a ticket attachment
     # TODO(auxesis): add method for commenting on a ticket

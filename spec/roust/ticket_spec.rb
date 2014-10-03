@@ -65,6 +65,26 @@ describe Roust do
                  :body    => mocks_path.join('ticket-100-show.txt').read,
                  :headers => {})
 
+    stub_request(:get, "http://rt.example.org/REST/1.0/ticket/150/links")
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-150-links.txt').read,
+                 :headers => {})
+
+    stub_request(:post, "http://rt.example.org/REST/1.0/ticket/150/links")
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-150-links-update.txt').read,
+                 :headers => {})
+
+    stub_request(:get, "http://rt.example.org/REST/1.0/ticket/151/links")
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-151-links.txt').read,
+                 :headers => {})
+
+    stub_request(:post, "http://rt.example.org/REST/1.0/ticket/151/links")
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-151-links-update.txt').read,
+                 :headers => {})
+
     @rt = Roust.new(credentials)
     expect(@rt.authenticated?).to eq(true)
   end
@@ -147,7 +167,7 @@ describe Roust do
     end
 
     it 'can list linked tickets on individual tickets' do
-      links = @rt.ticket_links('3')
+      links = @rt.ticket_links_show('3')
 
       expect(links['id']).to eq('3')
 
@@ -169,7 +189,7 @@ describe Roust do
       end
     end
 
-    it 'transforms attribute case when creating or updating tickets' do
+    it 'transforms attribute case when manipulating principals' do
       attrs = {
         'requestors' => 'alice@them.example,bob@them.example',
         'cc'         => 'charlie@them.example',
@@ -185,5 +205,45 @@ describe Roust do
           query['content'] =~ /AdminCc:/
         }
     end
+
+    it 'adds links' do
+      attrs = {
+        'RefersTo' => [
+          'http://google.com/',
+          'http://google.com.au/',
+          'http://google.co.uk/',
+          'http://google.ca/',
+        ],
+        'DependsOn' => [
+          'http://amazon.com/',
+          'http://amazon.co.uk/',
+        ]
+      }
+      ticket = @rt.ticket_links_add(150, attrs)
+
+      expect(ticket['RefersTo'].size).to eq(attrs['RefersTo'].size)
+      expect(ticket['DependsOn'].size).to eq(attrs['DependsOn'].size)
+    end
+
+    it 'removes links' do
+      attrs = {
+        'RefersTo' => [
+          'http://google.com/',
+          'http://google.com.au/',
+          'http://google.co.uk/',
+          'http://google.ca/',
+        ],
+        'DependsOn' => [
+          'http://amazon.com/',
+          'http://amazon.co.uk/',
+        ]
+      }
+      ticket = @rt.ticket_links_remove(151, attrs)
+
+      expect(ticket['RefersTo']).to eq(nil)
+      expect(ticket['DependsOn']).to eq(nil)
+    end
+
+    it 'transforms attribute case when manipulating links'
   end
 end

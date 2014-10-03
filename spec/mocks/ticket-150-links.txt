@@ -1,0 +1,12 @@
+RT/3.4.6 200 Ok
+
+id: ticket/150/links
+
+RefersTo: http://google.com/,
+          http://google.com.au/,
+          http://google.co.uk/,
+          http://google.ca/,
+
+DependsOn: http://amazon.com/,
+           http://amazon.co.uk/
+
