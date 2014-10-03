@@ -169,7 +169,7 @@ describe Roust do
       end
     end
 
-    it 'transforms attribute case when creating or updating tickets' do
+    it 'transforms attribute case when manipulating principals' do
       attrs = {
         'requestors' => 'alice@them.example,bob@them.example',
         'cc'         => 'charlie@them.example',
