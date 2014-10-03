@@ -136,7 +136,7 @@ class Roust
       end
     end
 
-    def ticket_links(id)
+    def ticket_links_show(id)
       response = self.class.get("/ticket/#{id}/links")
       body, _ = explode_response(response)
 
@@ -148,6 +148,64 @@ class Roust
       end
 
       Hash[cleaned_hash].merge('id' => id)
+    end
+
+    # FIXME(auxesis): think about calling this automatically from ticket_update
+    #
+    # This will explicitly set the links on a ticket. If you omit a link value
+    #
+    # e.g. The links on the RT side look like this:
+    #
+    #   {
+    #     "RefersTo" => [
+    #       "http://us.example",
+    #       "http://them.example",
+    #     ]
+    #   }
+    #
+    # and you want to add a new link, you must post an update with all the
+    # existing link values, with the new link appended:
+    #
+    #   {
+    #     "RefersTo" => [
+    #       "http://us.example",
+    #       "http://them.example",
+    #       "http://others.example",
+    #     ]
+    #   }
+    #
+    # If you omit the currently set link values, they will be deleted by RT.
+    def ticket_links_update(id, attrs)
+
+      # OMFG
+      tries = attrs.max_by {|k,v| v.size }.last.size
+
+      tries.times do
+        content = compose_content('ticket', id, attrs)
+
+        response = self.class.post(
+          "/ticket/#{id}/links",
+          :body => {
+            :content => content
+          }
+        )
+
+        body, _ = explode_response(response)
+
+        case body
+        when /^# Links for ticket (\d+) updated/
+          id = $1
+          #ticket_links_show(id)
+        when /^# You are not allowed to modify ticket \d+/
+          raise Unauthorized, body
+        when /^# Syntax error/
+          raise SyntaxError, body
+        else
+          raise UnhandledResponse, body
+        end
+      end
+
+      ticket_links_show(id)
     end
 
     # TODO(auxesis): add method for updating ticket links

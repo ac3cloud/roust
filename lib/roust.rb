@@ -93,6 +93,8 @@ class Roust
       "#{k}: #{v}"
     end
 
+    puts content.join("\n")
+
     content.join("\n")
   end
 
