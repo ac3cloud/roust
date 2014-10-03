@@ -143,18 +143,22 @@ class Roust
       hash = body_to_hash(body)
       id = hash.delete('id').split('/')[1]
       cleaned_hash = hash.map do |k, v|
-        ids = v.split(/\s*,\s*/).map {|url| url.split('/').last }
+        ids = v.split(/\s*,\s*/).map do |url|
+          url =~ /^fsck\.com\-/ ? url.split('/').last : url
+        end
         [ k, ids ]
       end
 
       Hash[cleaned_hash].merge('id' => id)
     end
 
-    # FIXME(auxesis): think about calling this automatically from ticket_update
+    # Add links on a ticket.
     #
-    # This will explicitly set the links on a ticket. If you omit a link value
+    # @param id [Fixnum] the id of the ticket to add links on.
+    # @param attrs [Hash] the links to add.
+    # @return [Hash] all the links on the ticket after the add action.
     #
-    # e.g. The links on the RT side look like this:
+    # Example attrs:
     #
     #   {
     #     "RefersTo" => [
@@ -163,25 +167,30 @@ class Roust
     #     ]
     #   }
     #
-    # and you want to add a new link, you must post an update with all the
-    # existing link values, with the new link appended:
-    #
-    #   {
-    #     "RefersTo" => [
-    #       "http://us.example",
-    #       "http://them.example",
-    #       "http://others.example",
-    #     ]
-    #   }
-    #
-    # If you omit the currently set link values, they will be deleted by RT.
-    def ticket_links_update(id, attrs)
+    def ticket_links_add(id, attrs)
+      # Get the current links state
+      current_links = ticket_links_show(id)
+      current_links.delete('id')
+      desired_links = Marshal.load(Marshal.dump(current_links))
 
-      # OMFG
-      tries = attrs.max_by {|k,v| v.size }.last.size
+      # Build up the desired link state
+      attrs.each do |k,v|
+        desired_links[k] ||= []
+        v.each do |link|
+          desired_links[k] << link
+        end
+        desired_links[k].uniq!
+      end
+
+      # Remove all links before we add any new ones. Fucking RT API.
+      ticket_links_remove(id, current_links)
+
+      # Work out how many times we'll need to make the same request until we
+      # get the desired state.
+      tries = desired_links.max_by {|k,v| v.size }.last.size
 
       tries.times do
-        content = compose_content('ticket', id, attrs)
+        content = compose_content('ticket', id, desired_links)
 
         response = self.class.post(
           "/ticket/#{id}/links",
@@ -208,7 +217,67 @@ class Roust
       ticket_links_show(id)
     end
 
-    # TODO(auxesis): add method for updating ticket links
+    # Remove links on a ticket.
+    #
+    # @param id [Fixnum] the id of the ticket to remove links on.
+    # @param attrs [Hash] the links to remove.
+    # @return [Hash] all the links on the ticket after the remove action.
+    #
+    # Example attrs:
+    #
+    #   {
+    #     "DependsOn" => [
+    #       "http://us.example",
+    #       "http://them.example",
+    #     ],
+    #     "RefersTo" => [
+    #       "http://others.example",
+    #     ],
+    #   }
+    #
+    def ticket_links_remove(id, attrs)
+      # Get the current links state
+      current_links = ticket_links_show(id)
+      desired_links = Marshal.load(Marshal.dump(current_links))
+
+      # Build up the desired link state
+      attrs.each do |k,v|
+        v.each do |link|
+          desired_links[k].delete(link) if desired_links[k]
+        end
+      end
+
+      # Work out how many times we'll need to make the same request until we
+      # get the desired state.
+      tries = attrs.empty? ? 0 : attrs.max_by {|k,v| v.size }.last.size
+
+      tries.times do
+        content = compose_content('ticket', id, desired_links)
+
+        response = self.class.post(
+          "/ticket/#{id}/links",
+          :body => {
+            :content => content
+          }
+        )
+
+        body, _ = explode_response(response)
+
+        case body
+        when /^# Links for ticket (\d+) updated/
+          id = $1
+        when /^# You are not allowed to modify ticket \d+/
+          raise Unauthorized, body
+        when /^# Syntax error/
+          raise SyntaxError, body
+        else
+          raise UnhandledResponse, body
+        end
+      end
+
+      ticket_links_show(id)
+    end
+
     # TODO(auxesis): add method for listing ticket attachments
     # TODO(auxesis): add method for getting a ticket attachment
     # TODO(auxesis): add method for commenting on a ticket
