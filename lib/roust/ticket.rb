@@ -333,6 +333,14 @@ class Roust
 
       hash = body_to_hash(body)
 
+      if custom_fields = hash.keys.grep(/^CF\-/)
+        hash['CustomFields'] = {}
+        custom_fields.each do |k|
+          key = k.split('-', 2).last
+          hash['CustomFields'][key] = hash.delete(k)
+        end
+      end
+
       %w(Requestors Cc AdminCc).each do |field|
         hash[field] = hash[field].split(', ') if hash[field]
       end

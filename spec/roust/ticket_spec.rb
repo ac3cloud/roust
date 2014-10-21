@@ -65,6 +65,11 @@ describe Roust do
                  :body    => mocks_path.join('ticket-100-show.txt').read,
                  :headers => {})
 
+    stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/200/show')
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-200-show.txt').read,
+                 :headers => {})
+
     stub_request(:get, "http://rt.example.org/REST/1.0/ticket/150/links")
       .to_return(:status  => 200,
                  :body    => mocks_path.join('ticket-150-links.txt').read,
@@ -142,6 +147,14 @@ describe Roust do
       %w(Requestors Cc AdminCc).each do |field|
         expect(ticket[field].size).to be > 1
       end
+    end
+
+    it 'presents custom fields as a separate hash' do
+      ticket = @rt.show('200')
+      expect(ticket).to_not eq(nil)
+
+      expect(ticket['CustomFields']).to_not eq(nil)
+      expect(ticket['CustomFields']['Category']).to_not eq(nil)
     end
 
     it 'can fetch transactions on individual tickets' do
