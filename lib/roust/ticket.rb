@@ -67,19 +67,19 @@ class Roust
         },
       )
 
-        body, _ = explode_response(response)
+      body, _ = explode_response(response)
 
-        case body
-        when /^# Ticket (\d+) updated/
-          id = $1
-          ticket_show(id)
-        when /^# You are not allowed to modify ticket \d+/
-          raise Unauthorized, body
-        when /^# Syntax error/
-          raise SyntaxError, body
-        else
-          raise UnhandledResponse, body
-        end
+      case body
+      when /^# Ticket (\d+) updated/
+        id = $1
+        ticket_show(id)
+      when /^# You are not allowed to modify ticket \d+/
+        raise Unauthorized, body
+      when /^# Syntax error/
+        raise SyntaxError, body
+      else
+        raise UnhandledResponse, body
+      end
     end
 
     def ticket_search(attrs)
