@@ -28,6 +28,8 @@ class Roust
       key, admincc = attrs.detect {|k,v| k =~ /admincc/i }
       attrs.delete(key)
 
+      # FIXME(auxesis): add ability to set custom fields
+
       content = compose_content('ticket', attrs['id'], attrs)
 
       response = self.class.post(
@@ -58,6 +60,15 @@ class Roust
     end
 
     def ticket_update(id, attrs)
+      # Unpack and repack custom fields
+      attrs = Marshal.load(Marshal.dump(attrs)) # LOL Ruby "deep copy"
+      if custom_fields = attrs.delete('CustomFields')
+        custom_fields.each do |k,v|
+          attrs["CF-#{k}"] = v
+        end
+      end
+
+      # Build the request
       content = compose_content('ticket', id, attrs)
 
       response = self.class.post(

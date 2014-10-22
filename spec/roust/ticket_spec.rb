@@ -70,6 +70,11 @@ describe Roust do
                  :body    => mocks_path.join('ticket-200-show.txt').read,
                  :headers => {})
 
+    stub_request(:post, "http://rt.example.org/REST/1.0/ticket/200/edit")
+      .to_return(:status => 200,
+                 :body    => mocks_path.join('ticket-200-update.txt').read,
+                 :headers => {})
+
     stub_request(:get, "http://rt.example.org/REST/1.0/ticket/150/links")
       .to_return(:status  => 200,
                  :body    => mocks_path.join('ticket-150-links.txt').read,
@@ -155,6 +160,21 @@ describe Roust do
 
       expect(ticket['CustomFields']).to_not eq(nil)
       expect(ticket['CustomFields']['Category']).to_not eq(nil)
+    end
+
+    it 'sets custom fields via separate hash' do
+      attrs = {
+        'CustomFields' => {
+          'Category' => 'foobarbaz'
+        }
+      }
+      ticket = @rt.ticket_update(200, attrs)
+
+      expect(WebMock).to have_requested(:post, "rt.example.org/REST/1.0/ticket/200/edit")
+        .with { |request|
+          query = WebMock::Util::QueryMapper.query_to_values(request.body)
+          query['content'] =~ /CF\-Category:/
+        }
     end
 
     it 'can fetch transactions on individual tickets' do
