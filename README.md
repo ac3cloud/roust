@@ -36,7 +36,7 @@ require 'roust'
 
 credentials = {
   :server   => 'http://rt.example.org',
-  :username => 'admin'
+  :username => 'admin',
   :password => 's3cr3t'
 }
 
