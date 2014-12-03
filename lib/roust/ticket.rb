@@ -375,6 +375,8 @@ class Roust
               atarr.map { |a| a.gsub!(/^\s*/, '') }
               atarr.each do |a|
                 i = a.match(/(\d+):\s*(.*)/)
+                # Something is wrong here, probably "\n\nAttachments" in the body of the transaction :(
+                next unless i
                 s = {
                   :id   => i[1].to_s,
                   :name => i[2].to_s
