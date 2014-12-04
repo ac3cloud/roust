@@ -374,7 +374,7 @@ class Roust
               atarr = temp[1].split("\n")
               atarr.map { |a| a.gsub!(/^\s*/, '') }
               atarr.each do |a|
-                i = a.match(/(\d+):\s*(.*)/)
+                i = a.match(/(\d+):\s+(.*)/)
                 # Something is wrong here, probably "\n\nAttachments" in the body of the transaction :(
                 next unless i
                 s = {
