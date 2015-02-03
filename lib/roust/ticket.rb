@@ -82,6 +82,33 @@ class Roust
         end
     end
 
+    def ticket_comment(id, attrs)
+      attrs['Action'] = 'Comment'
+      attrs['Text'].gsub!(/\n/, "\n ") if attrs['Text'] # insert a space on continuation lines.
+      content = compose_content('ticket', id, attrs)
+
+      response = self.class.post(
+        "/ticket/#{id}/comment",
+        :body => {
+          :content => content
+        },
+      )
+
+        body, _ = explode_response(response)
+
+        case body
+        when /^# Ticket (\d+) updated/
+          id = $1
+          ticket_show(id)
+        when /^# You are not allowed to modify ticket \d+/
+          raise Unauthorized, body
+        when /^# Syntax error/
+          raise SyntaxError, body
+        else
+          raise UnhandledResponse, body
+        end
+    end
+
     def ticket_search(attrs)
       params = {
         :format  => 's',
