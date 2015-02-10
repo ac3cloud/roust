@@ -60,6 +60,16 @@ describe Roust do
                   :body    => mocks_path.join('ticket-100-update.txt').read,
                   :headers => {})
 
+    stub_request(:post, "http://rt.example.org/REST/1.0/ticket/100/comment")
+      .with { |request|
+        query = WebMock::Util::QueryMapper.query_to_values(request.body)
+        require 'pry'
+
+        true
+      }.to_return(:status => 200,
+                  :body    => mocks_path.join('ticket-100-comment.txt').read,
+                  :headers => {})
+
     stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/100/show')
       .to_return(:status  => 200,
                  :body    => mocks_path.join('ticket-100-show.txt').read,
@@ -203,6 +213,36 @@ describe Roust do
           query['content'] =~ /Requestors:/ &&
           query['content'] =~ /Cc:/ &&
           query['content'] =~ /AdminCc:/
+        }
+    end
+
+    it 'can comment on a ticket' do
+      attrs = {
+        'action' => 'comment',
+        'text'   => 'this is a test comment'
+      }
+      ticket = @rt.ticket_comment(100, attrs)
+
+      expect(WebMock).to have_requested(:post, "rt.example.org/REST/1.0/ticket/100/comment")
+        .with { |request|
+          query = WebMock::Util::QueryMapper.query_to_values(request.body)
+          query['content'] =~ /Action: comment/ &&
+          query['content'] =~ /Text: this is a test comment/
+        }
+    end
+
+    it 'can correspond on a ticket' do
+      attrs = {
+        'action' => 'correspond',
+        'text'   => 'this is a test piece of correspondence'
+      }
+      ticket = @rt.ticket_comment(100, attrs)
+
+      expect(WebMock).to have_requested(:post, "rt.example.org/REST/1.0/ticket/100/comment")
+        .with { |request|
+          query = WebMock::Util::QueryMapper.query_to_values(request.body)
+          query['content'] =~ /Action: correspond/ &&
+          query['content'] =~ /Text: this is a test piece of correspondence/
         }
     end
 

@@ -83,9 +83,12 @@ class Roust
     end
 
     def ticket_comment(id, attrs)
-      attrs['Action'] = 'Comment'
       attrs['Text'].gsub!(/\n/, "\n ") if attrs['Text'] # insert a space on continuation lines.
       content = compose_content('ticket', id, attrs)
+
+      unless content.match(/Action: (comment|correspond)/)
+        raise "'Action' must be one of 'Comment' or 'Correspond'"
+      end
 
       response = self.class.post(
         "/ticket/#{id}/comment",
@@ -97,8 +100,7 @@ class Roust
         body, _ = explode_response(response)
 
         case body
-        when /^# Ticket (\d+) updated/
-          id = $1
+        when /^# Message recorded/
           ticket_show(id)
         when /^# You are not allowed to modify ticket \d+/
           raise Unauthorized, body
