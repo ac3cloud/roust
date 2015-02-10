@@ -86,7 +86,7 @@ class Roust
       attrs['Text'].gsub!(/\n/, "\n ") if attrs['Text'] # insert a space on continuation lines.
       content = compose_content('ticket', id, attrs)
 
-      unless content.match(/Action: (comment|correspond)/)
+      unless content.match(/Action: (comment|correspond)/i)
         raise "'Action' must be one of 'Comment' or 'Correspond'"
       end
 
