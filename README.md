@@ -144,5 +144,4 @@ TODO
 ----
 
 - Links CRUD (linking tickets to one another)
-- Ticket comment + correspondence
 - Attachment fetching
