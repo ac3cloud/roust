@@ -12,6 +12,7 @@ Features
 - Fetching ticket metadata (id, subject, queue, etc)
 - Fetching transactions on individual tickets (in long and short form)
 - Fetching user details
+- Adding comments or correspondence to tickets
 
 Installing
 ----------
@@ -77,6 +78,23 @@ attrs = {
 
 rt.ticket_update(ticket_id, attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales', … }
 
+# Add comments to a ticket
+
+attrs = {
+  'Action' => 'comment'
+  'Text'   => 'this is a test comment'
+}
+
+rt.ticket_comment(ticket_id, attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales', … }
+
+# Add correspondence to a ticket
+
+attrs = {
+  'Action' => 'correspond'
+  'Text'   => 'this is a test piece of correspondence, which will email out to requestors'
+}
+
+rt.ticket_comment(ticket_id, attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales', … }
 
 # Fetch user details
 rt.user("dan@us.example") # => {"id"=>"user/160000", "name"=>"dan", "password"=>"********", "emailaddress"=>"dan@us.example", "realname"=>"Dan Smith", "nickname"=>"dan", … }
