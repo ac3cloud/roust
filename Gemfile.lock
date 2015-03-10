@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    roust (1.8.2)
+    roust (1.8.3)
       activesupport (>= 4.0.10)
       httparty (>= 0.13.1)
       mail (>= 2.5.4)
