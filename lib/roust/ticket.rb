@@ -100,7 +100,7 @@ class Roust
         body, _ = explode_response(response)
 
         case body
-        when /^# Message recorded/
+        when /^# (Message recorded|Comments added)/
           ticket_show(id)
         when /^# You are not allowed to modify ticket \d+/
           raise Unauthorized, body

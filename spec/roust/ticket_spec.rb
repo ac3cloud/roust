@@ -75,6 +75,21 @@ describe Roust do
                  :body    => mocks_path.join('ticket-100-show.txt').read,
                  :headers => {})
 
+    stub_request(:post, "http://rt.example.org/REST/1.0/ticket/101/comment")
+      .with { |request|
+        query = WebMock::Util::QueryMapper.query_to_values(request.body)
+        require 'pry'
+
+        true
+      }.to_return(:status => 200,
+                  :body    => mocks_path.join('ticket-101-comment.txt').read,
+                  :headers => {})
+
+    stub_request(:get, 'http://rt.example.org/REST/1.0/ticket/101/show')
+      .to_return(:status  => 200,
+                 :body    => mocks_path.join('ticket-101-show.txt').read,
+                 :headers => {})
+
     stub_request(:get, "http://rt.example.org/REST/1.0/ticket/150/links")
       .to_return(:status  => 200,
                  :body    => mocks_path.join('ticket-150-links.txt').read,
@@ -224,6 +239,14 @@ describe Roust do
       ticket = @rt.ticket_comment(100, attrs)
 
       expect(WebMock).to have_requested(:post, "rt.example.org/REST/1.0/ticket/100/comment")
+        .with { |request|
+          query = WebMock::Util::QueryMapper.query_to_values(request.body)
+          query['content'] =~ /Action: comment/ &&
+          query['content'] =~ /Text: this is a test comment/
+        }
+      ticket = @rt.ticket_comment(101, attrs)
+
+      expect(WebMock).to have_requested(:post, "rt.example.org/REST/1.0/ticket/101/comment")
         .with { |request|
           query = WebMock::Util::QueryMapper.query_to_values(request.body)
           query['content'] =~ /Action: comment/ &&
