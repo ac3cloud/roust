@@ -72,7 +72,7 @@ rt.ticket_create(attrs) # => { 'Subject' => 'a test ticket', 'Queue' => 'sales',
 
 # Update ticket
 attrs = {
-  'Subject' => 'A new subject'
+  'Subject' => 'A new subject',
   'Owner'   => 'alice'
 }
 
@@ -81,7 +81,7 @@ rt.ticket_update(ticket_id, attrs) # => { 'Subject' => 'a test ticket', 'Queue' 
 # Add comments to a ticket
 
 attrs = {
-  'Action' => 'comment'
+  'Action' => 'comment',
   'Text'   => 'this is a test comment'
 }
 
@@ -90,7 +90,7 @@ rt.ticket_comment(ticket_id, attrs) # => { 'Subject' => 'a test ticket', 'Queue'
 # Add correspondence to a ticket
 
 attrs = {
-  'Action' => 'correspond'
+  'Action' => 'correspond',
   'Text'   => 'this is a test piece of correspondence, which will email out to requestors'
 }
 
