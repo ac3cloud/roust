@@ -309,8 +309,6 @@ class Roust
 
     # TODO(auxesis): add method for listing ticket attachments
     # TODO(auxesis): add method for getting a ticket attachment
-    # TODO(auxesis): add method for commenting on a ticket
-    # TODO(auxesis): add method for replying on a ticket
 
     # To maintain backwards compatibility with previous versions (and rt-client),
     # alias these methods to their short form.
