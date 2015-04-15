@@ -383,6 +383,7 @@ class Roust
       items.each do |item|
         # Yes, this messes with the "content:" field but that's the one that's upsetting Mail.new
         item.gsub!(/\n\s*\n/, "\n") # remove blank lines for Mail
+        item.gsub!(/\r\r\n/, "\n") # convert \r\r\n into \n so Mail parses it correctly
         history = Mail.new(item)
         next if not comments and history['type'].to_s =~ /Comment/ # skip comments
           reply = {}
