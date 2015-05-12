@@ -16,7 +16,6 @@ class Roust
     @server   = credentials[:server]
     @username = credentials[:username]
     @password = credentials[:password]
-    @host     = credentials[:host] if credentials[:host]
 
     if @server =~ /REST\/1\.0/
       raise ArgumentError, 'The supplied :server has REST in the URL. You only need to specify the base, e.g. http://rt.example.org/'
@@ -33,7 +32,6 @@ class Roust
     #   has succeeded or failed. RT will always return a HTTP 200.
 
     self.class.base_uri(@server)
-    self.class.headers['Host'] = @host if @host
 
     response = self.class.post(
       '/index.html',
