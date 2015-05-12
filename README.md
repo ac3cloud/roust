@@ -13,6 +13,7 @@ Features
 - Fetching transactions on individual tickets (in long and short form)
 - Fetching user details
 - Adding comments or correspondence to tickets
+- Supports custom HTTP Host header
 
 Installing
 ----------
@@ -35,8 +36,12 @@ Using
 ``` ruby
 require 'roust'
 
+# Note that ':host' is optional and only needed if your setup needs a custom
+# host header to work.
+
 credentials = {
-  :server   => 'http://rt.example.org',
+  :server   => 'http://127.0.0.1/',
+  :host     => 'rt.example.org',
   :username => 'admin',
   :password => 's3cr3t'
 }
