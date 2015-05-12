@@ -37,14 +37,14 @@ Using
 require 'roust'
 
 credentials = {
-  :server   => 'http://127.0.0.1/',
+  :server   => 'http://rt.example.org/',
   :username => 'admin',
   :password => 's3cr3t'
 }
 
 # Optional headers:
 headers = {
-  'Host'       => 'rt.example.org',
+  'Host'       => 'custom.example.org',
   'User-Agent' => 'Roust in dev environment'
 }
 
