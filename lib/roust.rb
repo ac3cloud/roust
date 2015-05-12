@@ -12,7 +12,7 @@ class Roust
   include Roust::Queue
   include Roust::User
 
-  def initialize(credentials)
+  def initialize(credentials, headers = {})
     @server   = credentials[:server]
     @username = credentials[:username]
     @password = credentials[:password]
@@ -21,6 +21,8 @@ class Roust
       raise ArgumentError, 'The supplied :server has REST in the URL. You only need to specify the base, e.g. http://rt.example.org/'
     end
 
+    headers['User-Agent'] = 'Roust' unless headers.key?('User-Agent')
+    self.class.headers.merge!(headers)
     authenticate!
   end
 
