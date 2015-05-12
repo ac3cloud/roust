@@ -13,7 +13,7 @@ Features
 - Fetching transactions on individual tickets (in long and short form)
 - Fetching user details
 - Adding comments or correspondence to tickets
-- Supports custom HTTP Host header
+- Supports custom HTTP headers (default User-Agent is "Roust")
 
 Installing
 ----------
@@ -36,17 +36,19 @@ Using
 ``` ruby
 require 'roust'
 
-# Note that ':host' is optional and only needed if your setup needs a custom
-# host header to work.
-
 credentials = {
   :server   => 'http://127.0.0.1/',
-  :host     => 'rt.example.org',
   :username => 'admin',
   :password => 's3cr3t'
 }
 
-rt = Roust.new(credentials)
+# Optional headers:
+headers = {
+  'Host'       => 'rt.example.org',
+  'User-Agent' => 'Roust in dev environment'
+}
+
+rt = Roust.new(credentials, headers)
 rt.authenticated? # => true
 
 # Query RT
