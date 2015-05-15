@@ -150,5 +150,4 @@ Releasing
 TODO
 ----
 
-- Links CRUD (linking tickets to one another)
 - Attachment fetching
