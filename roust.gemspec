@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.homepage     = 'http://github.com/bulletproofnetworks/roust'
   s.license      = 'Apache 2.0'
 
-  s.required_ruby_version     = '>= 1.9.2'
+  s.required_ruby_version     = '>= 2.0.0'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

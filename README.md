@@ -18,7 +18,7 @@ Features
 Installing
 ----------
 
-Ensure you have Ruby > 1.9 installed, then run:
+Ensure you have Ruby >= 2.0 installed, then run:
 
 ```
 gem install roust
