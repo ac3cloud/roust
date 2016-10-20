@@ -60,7 +60,8 @@ class Roust
   end
 
   def authenticated?
-    return true if show('1')
+    show('1')
+    return true
   rescue Unauthenticated
     return false
   end

@@ -6,6 +6,7 @@ class Roust
       body, _ = explode_response(response)
 
       return nil if body =~ /^# (Ticket (\d+) does not exist\.)/
+      return nil if body =~ /^# You are not allowed to display ticket (\d+)./
 
       parse_ticket_attributes(body)
     end
