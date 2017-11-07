@@ -44,7 +44,8 @@ class Roust
     )
 
     cookie = response.headers['set-cookie']
-    self.class.headers['Cookie'] = cookie if cookie
+    self.class.default_cookies.add_cookies(cookie) if cookie
+    self.class.headers(:referer => "#{@server}/REST/1.0")
 
     # Switch the base uri over to the actual REST API base uri.
     self.class.base_uri "#{@server}/REST/1.0"
